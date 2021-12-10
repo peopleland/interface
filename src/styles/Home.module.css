@@ -1,0 +1,282 @@
+.title {
+  font-weight: bold;
+  font-size: 3.428rem;
+  text-align: center;
+  margin-top: 60px;
+}
+
+.congratulation {
+  font-weight: bold;
+  font-size: 2.428rem;
+  text-align: center;
+  margin-top: 60px;
+  line-height: 52px;
+  max-width: 850px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.scroll {
+  font-weight: bold;
+  font-size: 3.428rem;
+  text-align: center;
+  margin-top: 65px;
+  letter-spacing: 0.2em;
+}
+
+.desc {
+  font-weight: bold;
+  font-size: 1.70rem;
+  text-align: center;
+}
+
+.content {
+  max-width: 985px;
+  text-align: center;
+  margin-top: 46px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.subtitle {
+  margin-top: 50px;
+  font-size: 1.28rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+.subcontent {
+  line-height: 24px;
+}
+
+.guideImg {
+  height: 182px;
+  width: 384px;
+  text-align: center;
+}
+
+.landImg {
+  width: 132px;
+  height: 132px;
+  text-align: center;
+}
+
+.mintText {
+  margin-top: 55px;
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  text-align: center;
+  width: 100%;
+}
+
+.sloganCarousel {
+  margin-right: auto;
+  margin-left: auto;
+  margin-top: 3rem;
+  width: 500px;
+}
+
+.sloganCarouselImage {
+  border: 2px solid #FFFFFF !important;
+  border-radius: 4px !important;
+}
+
+.sloganCarouselFrame {
+  position: absolute;
+  z-index: 1000;
+  top: 123px;
+  left: 110px;
+  border: 2px solid #625FF6;
+  box-sizing: border-box;
+  border-radius: 4px;
+  height: 55px;
+  width: 280px;
+}
+
+.sloganDesc {
+  text-align: center;
+  font-size: 14px;
+  line-height: 20px;
+  margin-top: 2.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.mintLine {
+  height: 1px;
+  width: 30%;
+  background: #6B6E80;
+  vertical-align: center;
+  margin-top: 11px;
+  line-height: 24px;
+}
+
+.mintTitle {
+  margin-left: 81px;
+  margin-right: 81px;
+  vertical-align: center;
+  font-size: 18px;
+  line-height: 24px;
+  letter-spacing: 0.2em;
+}
+
+.mintRemindTitle {
+  margin-top: 58px;
+  font-size: 18px;
+  line-height: 24px;
+  letter-spacing: 0.2em;
+  text-align: center;
+}
+
+.mintDesc {
+  margin-top: 4.2rem;
+  text-align: center;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.inviteDesc {
+  margin-top: 4.2rem;
+  text-align: center;
+  font-size: 14px;
+  line-height: 20px;
+  max-width: 984px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.inputs {
+  margin-top: 68px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.inviteAddressInput {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.inputWrapper {
+  position: relative;
+  width: 184px;
+  min-width: 0;
+  padding: 4px 11px;
+  color: #000000d9;
+  font-size: 14px;
+  line-height: 1.5715;
+  background-color: #CFAF8B;
+  background-image: none;
+  transition: all .3s;
+  display: inline-flex;
+}
+
+.inviteAddressInputWrapper {
+  position: relative;
+  width: 408px;
+  min-width: 0;
+  padding: 4px 11px;
+  color: #000000d9;
+  font-size: 14px;
+  line-height: 1.5715;
+  background-color: #CFAF8B;
+  background-image: none;
+  transition: all .3s;
+  display: inline-flex;
+}
+
+.inputContent {
+  flex: 0 0 184px;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.inviteAddressInputContent {
+  flex: 0 0 408px;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.inputPrefix {
+  display: flex;
+  flex: none;
+  align-items: center;
+  font-size: 14px;
+  line-height: 24px;
+  letter-spacing: 0.2em;
+  color: #A5742A;
+}
+
+.input {
+  width: 100%;
+  padding: 0;
+  border: none;
+  outline: none;
+  background-color: #CFAF8B;
+}
+
+.end {
+  margin-top: 70px;
+  margin-bottom: 70px;
+  font-size: 12px;
+  line-height: 24px;
+  text-align: center;
+}
+
+
+.countDownContent {
+  margin-top: 68px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.countDown {
+  background: #635A5A;
+  border-radius: 10px;
+  width: 167px;
+  height: 216px;
+  margin-right: 32px;
+}
+
+.countDownTitle {
+  padding: 31px 19px;
+}
+
+.countDownText {
+  text-align: center;
+  font-size: 64px;
+  font-weight: bold;
+}
+
+.inputDisabled {
+  color: #00000040;
+  border-color: #d9d9d9;
+  background: #f5f5f5 !important;
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+@media (max-width: 750px) {
+  .inputs {
+    flex-direction: column;
+  }
+  .inputContent {
+    flex: auto;
+    margin-bottom: 20px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .countDownContent {
+    flex-direction: column;
+  }
+  .countDown {
+    flex: auto;
+    margin-bottom: 20px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
