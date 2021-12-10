@@ -1,0 +1,10 @@
+query Lands($owner: String!) {
+  tokenInfos(first: 1000, where: {owner: $owner}) {
+    id
+    tokenId
+    tokenSvg
+    x
+    y
+    slogan
+  }
+}
