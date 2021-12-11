@@ -16,12 +16,61 @@ import {AirdropContract} from "../app/contract/airdropContract";
 import numeral from "numeral";
 import {useCallback, useEffect, useMemo, useState} from "react";
 import Image from 'next/image'
+import {
+  useUniswapV3Builder24HourOpenLazyQuery,
+  useUniswapV3BuilderLazyQuery,
+  useUniswapV3DaibuilderPoolLazyQuery,
+} from "../app/uniswap-v3/generated";
+
+const uniswapSwapURL = "https://app.uniswap.org/#/swap?inputCurrency=0x6b175474e89094c44da98b954eedeac495271d0f&outputCurrency=0x6fbc77cbfc59d201dc03e004203734e0fae10d3e"
 
 const Airdrop = () => {
   const { library, account, chainId, active, activate } = useWeb3React();
   const [currentMoment, setCurrentMoment] = useState(moment());
   const [buttonLoading, setButtonLoading] = useState<boolean>(false);
   const [isClaimed, setIsClaimed] = useState<boolean>(false);
+  // const [getBuilderUniswapData, builderUniswapData] = useUniswapV3BuilderLazyQuery({fetchPolicy: 'no-cache'})
+  const [getBuilderUniswapData, builderUniswapData] = useUniswapV3DaibuilderPoolLazyQuery({fetchPolicy: 'no-cache'})
+  const [getBuilder24HourData, builder24HourData] = useUniswapV3Builder24HourOpenLazyQuery({fetchPolicy: 'no-cache'})
+
+  // const builderPrice: number = useMemo(() => {
+  //   if (!builderUniswapData?.data?.token) return 0
+  //   return builderUniswapData.data.token.volumeUSD / builderUniswapData.data.token.volume
+  // }, [builderUniswapData?.data])
+
+  const builderPrice: number = useMemo(() => {
+    if (!builderUniswapData?.data?.pool?.token0Price) return 0
+    return parseFloat(builderUniswapData.data?.pool?.token0Price)
+  }, [builderUniswapData?.data])
+
+  const builder24HourPrice: number = useMemo(() => {
+    if (!builder24HourData?.data?.tokenHourDatas || builder24HourData.data?.tokenHourDatas.length === 0) return 0
+    return parseFloat(builder24HourData.data?.tokenHourDatas[0].open)
+  }, [builder24HourData?.data?.tokenHourDatas])
+
+  const builderFluctuation = useMemo(() => {
+    if (builder24HourPrice === 0) return 0
+    return ((builderPrice - builder24HourPrice) * 100) / builder24HourPrice
+  }, [builder24HourPrice, builderPrice])
+
+  const builderFluctuationDom = useMemo(() => {
+    if (builderFluctuation >= 0) {
+      return <span style={{color: "rgb(39, 174, 96)"}}>{builderFluctuation.toFixed(2)}%</span>
+    }
+    return <span style={{color: "rgb(253, 64, 64)"}}>{builderFluctuation.toFixed(2)}%</span>
+  }, [builderFluctuation])
+
+  const handlerTimeoutRequest = useCallback(() => {
+    getBuilderUniswapData().then(() => {
+      getBuilder24HourData({variables: {startTime: Math.floor(Date.now() / 1000) - 24 * 60 * 60}}).then(() => {
+        setTimeout(() => {handlerTimeoutRequest()}, 1000 * 60)
+      })
+    })
+  }, [getBuilder24HourData, getBuilderUniswapData])
+
+  useEffect(() => {
+    handlerTimeoutRequest()
+  }, [handlerTimeoutRequest])
 
   useEffect(() => {
     setInterval(() => {
@@ -152,47 +201,57 @@ const Airdrop = () => {
   }, [airdropData])
 
   const airdropShow = useMemo(() => {
-    return <div className={styles.content}>
-      <div className={styles.rewardsList}>
-        <div className={styles.rewardsValue}>
-          <div>Rewards</div>
-          <div style={{fontWeight: 700}}>
-            <div>Initial Team</div>
-            <div>{!!airdropValueList && airdropValueList[0]}</div>
+    return <div>
+      <div className={styles.content}>
+        <div className={styles.rewardsList}>
+          <div className={styles.rewardsValue}>
+            <div>Rewards</div>
+            <div style={{fontWeight: 700}}>
+              <div>Initial Team</div>
+              <div>{!!airdropValueList && airdropValueList[0]}</div>
+            </div>
+            <div style={{fontWeight: 700}}>
+              <div>Hold</div>
+              <div>{!!airdropValueList && airdropValueList[1]}</div>
+            </div>
+            <div style={{fontWeight: 700}}>
+              <div>Invite</div>
+              <div>{!!airdropValueList && airdropValueList[2]}</div>
+            </div>
+            <div style={{fontWeight: 700}}>
+              <div>Neighbors</div>
+              <div>{!!airdropValueList && airdropValueList[3]}</div>
+            </div>
           </div>
-          <div style={{fontWeight: 700}}>
-            <div>Hold</div>
-            <div>{!!airdropValueList && airdropValueList[1]}</div>
-          </div>
-          <div style={{fontWeight: 700}}>
-            <div>Invite</div>
-            <div>{!!airdropValueList && airdropValueList[2]}</div>
-          </div>
-          <div style={{fontWeight: 700}}>
-            <div>Neighbors</div>
-            <div>{!!airdropValueList && airdropValueList[3]}</div>
+          <div className={styles.rewardsTime}>
+            <div>End time</div>
+            <div>{EndAirdropDatetime.locale('en').format("LL")}</div>
           </div>
         </div>
-        <div className={styles.rewardsTime}>
-          <div>End time</div>
-          <div>{EndAirdropDatetime.locale('en').format("LL")}</div>
+        <div className={styles.rewardsAction}>
+          <div className={styles.claimCard}>
+            <div className={styles.claim}>
+              <div className={styles.claimTitle}>{claimTitle[0]}</div>
+              <div className={styles.claimDesc}>{claimTitle[1]}</div>
+              <div className={styles.claimFrame}>
+                <div className={styles.claimValue}>{!isClaimed ? "You will receive..." : "You received..."}</div>
+                {!!airdropData && <div className={styles.claimNum}>{numeral(airdropData.tol).format('0,0')} BUILDER</div>}
+              </div>
+              {claimButton}
+            </div>
+          </div>
         </div>
       </div>
-      <div className={styles.rewardsAction}>
-        <div className={styles.claimCard}>
-          <div className={styles.claim}>
-            <div className={styles.claimTitle}>{claimTitle[0]}</div>
-            <div className={styles.claimDesc}>{claimTitle[1]}</div>
-            <div className={styles.claimFrame}>
-              <div className={styles.claimValue}>{!isClaimed ? "You will receive..." : "You received..."}</div>
-              {!!airdropData && <div className={styles.claimNum}>{numeral(airdropData.tol).format('0,0')} BUILDER</div>}
-            </div>
-            {claimButton}
-          </div>
+      <div className={styles.price}>
+        <div className={styles.priceContent}>
+          <div className={styles.priceUniswapIcon}><a href={uniswapSwapURL} target="_blank" rel="noreferrer"><i className={styles.iconfont} style={{color: "#E9357C", fontSize: "2rem"}}>&#xe6d6;</i></a></div>
+          <div>(24h: {builderFluctuationDom})</div>
+          <div className={styles.priceUniswapText}>{`$${builderPrice.toFixed(2)}`} DAI /BUILDER</div>
+          <div><a href={uniswapSwapURL} target="_blank" rel="noreferrer"><i className={styles.iconfont}>&#xe605;</i></a></div>
         </div>
       </div>
     </div>
-  }, [airdropData, airdropValueList, claimButton, claimTitle, isClaimed])
+  }, [airdropData, airdropValueList, builderFluctuationDom, builderPrice, claimButton, claimTitle, isClaimed])
 
   const main = useMemo(() => {
     if (BeginAirdropDatetime.isSameOrBefore(currentMoment)) {
