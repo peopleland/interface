@@ -71,6 +71,11 @@ const Page: FC<PageProps> = ({title, children}) => {
                                              target="_blank" style={{color: "#625FF6"}}>GitHub</a>. You
               can modify and deploy it at will.
             </p>
+            <div style={{textAlign: 'center'}}>
+              <a href="https://www.netlify.com">
+                <img src="https://www.netlify.com/img/global/badges/netlify-color-accent.svg" alt="Deploys by Netlify" />
+              </a>
+            </div>
           </footer>
         </div>
       </div>
