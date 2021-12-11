@@ -28,6 +28,6 @@ export const EndAirdropDatetime = moment.unix(1670818332)
 export const AirdropList: any = IsDEV ? testAirdropList : prodAirdropList
 export const AirdropMerkleTree = genAirdropMerkleTree(AirdropList)
 
-const ProdAirdropContractAddress = "0x0000000000000000000000000000000000000000"
-const TestAirdropContractAddress = "0xD1d30B80C5EFB9145782634fe0F9cbeD5D24ef3b"
+const ProdAirdropContractAddress = "0x98080C43486FfA945f7FA4A7d40B699Ff404798B"
+const TestAirdropContractAddress = "0x98080C43486FfA945f7FA4A7d40B699Ff404798B"
 export const AirdropContractAddress = IsDEV ? TestAirdropContractAddress : ProdAirdropContractAddress
