@@ -1,9 +1,9 @@
 overwrite: true
 schema:
-  - https://api.thegraph.com/subgraphs/name/peopleland/v1-subgraph
-documents: "src/app/subgraph-v1/*.graphql"
+  - https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3
+documents: "src/app/uniswap-v3/*.graphql"
 generates:
-  src/app/subgraph-v1/generated.ts:
+  src/app/uniswap-v3/generated.ts:
     plugins:
       - "typescript"
       - "typescript-operations"
@@ -11,8 +11,7 @@ generates:
     config:
       defaultBaseOptions:
         context:
-          service: "v1-subgraph"
-  src/app/subgraph-v1/graphql.schema.json:
+          service: "uniswap-v3"
+  src/app/uniswap-v3/graphql.schema.json:
     plugins:
       - "introspection"
-

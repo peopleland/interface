@@ -1,0 +1,44 @@
+query UniswapV3BUILDER {
+  token(id: "0x6fbc77cbfc59d201dc03e004203734e0fae10d3e") {
+    id
+    symbol
+    volume
+    volumeUSD
+    totalValueLocked
+    totalValueLockedUSD
+    feesUSD
+    txCount
+  }
+}
+
+query UniswapV3DAIBUILDERPool {
+  pool(id:"0x2f08654b1482764c7084a2105eb12c3ff50396d2") {
+    id
+    token0 {
+      id
+      symbol
+    }
+    token1 {
+      id
+      symbol
+    }
+    token0Price
+    token1Price
+  }
+}
+
+query UniswapV3BUILDER24HourOpen($startTime: Int!) {
+  tokenHourDatas(
+    first: 1
+    skip: 0
+    where: {token: "0x6fbc77cbfc59d201dc03e004203734e0fae10d3e", periodStartUnix_gt: $startTime}
+    orderBy: periodStartUnix
+    orderDirection: asc
+  ) {
+    periodStartUnix
+    high
+    low
+    open
+    close
+  }
+}

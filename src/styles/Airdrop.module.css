@@ -13,7 +13,8 @@
 .end {
   font-size: 0.75rem;
   line-height: 1.5rem;
-  margin-top: 9.8125rem;
+  margin-top: 5.8125rem;
+  margin-bottom: 3rem;
 }
 
 .countDownContent {
@@ -43,7 +44,7 @@
 }
 
 .content {
-  padding-top: 15.5rem;
+  padding-top: 6.5rem;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -150,6 +151,51 @@
   text-align: center;
   font-weight: 700;
   font-size: 0.875rem;
+}
+
+.price {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  width: 416px;
+  height: 57px;
+  margin-top: 5rem;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 1.125rem;
+}
+
+.priceContent {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-right: 2.3125rem;
+  margin-left: 2.3125rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.priceUniswapIcon {
+  margin-top: -8px;
+}
+
+.priceUniswapText {
+  /*font-weight: bold;*/
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-stroke-width: 0.2px;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@font-face {
+  font-family: 'iconfont';  /* Project id 3006638 */
+  src: url('//at.alicdn.com/t/font_3006638_h0gev9spuk.woff2?t=1639241530651') format('woff2'),
+  url('//at.alicdn.com/t/font_3006638_h0gev9spuk.woff?t=1639241530651') format('woff'),
+  url('//at.alicdn.com/t/font_3006638_h0gev9spuk.ttf?t=1639241530651') format('truetype');
 }
 
 @media (max-width: 750px) {
