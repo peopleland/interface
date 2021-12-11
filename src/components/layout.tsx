@@ -67,7 +67,7 @@ const Page: FC<PageProps> = ({title, children}) => {
           <footer>
             <p className={styles.tips}>
               This page is open source in <a rel="noreferrer"
-                                             href="https://github.com/peopleland/peopleland"
+                                             href="https://github.com/peopleland/interface"
                                              target="_blank" style={{color: "#625FF6"}}>GitHub</a>. You
               can modify and deploy it at will.
             </p>
