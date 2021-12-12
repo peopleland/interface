@@ -40,10 +40,24 @@ const Page: FC<PageProps> = ({title, children}) => {
     </div>
   }, [account, chainId, connectMetamask])
 
+  const headerTitle = useMemo(() => {
+    return `${process.env.SEO_TITLE}${title ? ` - ${title}` : ''}`
+  }, [title])
+
   return useMemo(() => (
     <>
       <Head>
-        <title>People Land {title ? `- ${title}` : ''}</title>
+        <title>{headerTitle}</title>
+        <meta name="description" content={process.env.SEO_DESCRIPTION} />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={headerTitle} />
+        <meta property="og:description" content={process.env.SEO_DESCRIPTION} />
+        <meta property="og:site_name" content={process.env.SEO_TITLE} />
+        <meta property="twitter:card" content="summary" />
+        <meta property="twitter:creator" content={process.env.SEO_TWITTER} />
+        <meta property="twitter:title" content={headerTitle} />
+        <meta property="twitter:description" content={process.env.SEO_DESCRIPTION} />
+        <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no" />
       </Head>
 
       <div className={styles.pageWrapper}>
@@ -80,7 +94,7 @@ const Page: FC<PageProps> = ({title, children}) => {
         </div>
       </div>
     </>
-  ), [children, rightHeader, title])
+  ), [children, headerTitle, rightHeader])
 }
 
 export default Page
