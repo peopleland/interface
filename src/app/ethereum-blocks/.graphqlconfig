@@ -1,0 +1,5 @@
+{
+  "name": "Ethereum Blocks GraphQL Schema",
+  "schemaPath": "graphql.schema.json",
+  "extensions": {}
+}
