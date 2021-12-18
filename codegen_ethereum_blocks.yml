@@ -1,0 +1,17 @@
+overwrite: true
+schema:
+  - https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks
+documents: "src/app/ethereum-blocks/*.graphql"
+generates:
+  src/app/ethereum-blocks/generated.ts:
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+      - "typescript-react-apollo"
+    config:
+      defaultBaseOptions:
+        context:
+          service: "ethereum-blocks"
+  src/app/ethereum-blocks/graphql.schema.json:
+    plugins:
+      - "introspection"

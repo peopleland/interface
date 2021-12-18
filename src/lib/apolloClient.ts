@@ -6,7 +6,6 @@ const customFetch = (uri: string, options: any) => {
   const { headers } = options;
   delete headers.service;
   if (service === 'uniswap-v3') {
-    delete headers.authorization;
     return fetch(`https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3`, {
       ...options,
       headers: {
@@ -18,8 +17,18 @@ const customFetch = (uri: string, options: any) => {
     });
   }
   if (service === 'v1-subgraph') {
-    delete headers.authorization;
     return fetch(`https://api.thegraph.com/subgraphs/name/peopleland/v1-subgraph`, {
+      ...options,
+      headers: {
+        ...headers,
+        'sec-fetch-dest': 'empty',
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-site': 'cross-site',
+      },
+    });
+  }
+  if (service === 'ethereum-blocks') {
+    return fetch(`https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks`, {
       ...options,
       headers: {
         ...headers,
