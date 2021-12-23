@@ -159,7 +159,7 @@ const Page: FC<PageProps> = ({title, children}) => {
             </p>
             <div style={{textAlign: 'center', paddingBottom: "10px"}}>
               <a href="https://www.netlify.com">
-                <img src="https://www.netlify.com/img/global/badges/netlify-color-accent.svg" alt="Deploys by Netlify" />
+                <Image src="https://www.netlify.com/img/global/badges/netlify-color-accent.svg" alt="Deploys by Netlify" />
               </a>
             </div>
           </footer>
