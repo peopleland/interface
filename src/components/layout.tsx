@@ -10,6 +10,7 @@ import Image from "next/image";
 import MetamaskLogo from "../../public/assets/images/metamask.svg"
 import WalletConnectLogo from "../../public/assets/images/walletconnect.svg"
 import Coinbase from "../../public/assets/images/coinbase.svg"
+import Netlify from "../../public/assets/images/netlify.svg"
 import {getWalletConnectorLocalStorage, setWalletConnectorLocalStorage} from "../lib/helper";
 
 type PageProps = {
@@ -159,7 +160,7 @@ const Page: FC<PageProps> = ({title, children}) => {
             </p>
             <div style={{textAlign: 'center', paddingBottom: "10px"}}>
               <a href="https://www.netlify.com">
-                <Image src="https://www.netlify.com/img/global/badges/netlify-color-accent.svg" alt="Deploys by Netlify" />
+                <Image src={Netlify} alt="Deploys by Netlify" />
               </a>
             </div>
           </footer>

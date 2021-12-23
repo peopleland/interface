@@ -8,6 +8,7 @@ const pluginAntdLess = withAntdLess({
   //   '@THEME--DARK': 'theme-dark',
   // },
   lessVarsFilePath: './src/styles/variables.less',
+  lessVarsFilePathAppendToEndOfContent: false,
   // cssLoaderOptions: {
   // esModule: false,
   // sourceMap: false,
