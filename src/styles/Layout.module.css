@@ -15,6 +15,10 @@
     margin-right: 32px;
 }
 
+.links > a {
+  color: #DBDBDB;
+}
+
 .connect {
     position: absolute;
     top: 16px;
@@ -57,6 +61,17 @@
 
 .page {
     background-color: rgba(47,49,61,0.929);
+}
+
+.walletModalCard {
+  width: 50%;
+  text-align: center;
+  cursor: pointer;
+}
+
+.walletModalCard > div {
+  font-size: 1.1rem;
+  font-weight: 700;
 }
 
 @media (max-width: 750px) {
