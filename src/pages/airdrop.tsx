@@ -18,7 +18,6 @@ import {useCallback, useEffect, useMemo, useState} from "react";
 import Image from 'next/image'
 import {
   useUniswapV3Builder24HourOpenLazyQuery,
-  useUniswapV3BuilderLazyQuery,
   useUniswapV3DaibuilderPoolLazyQuery,
 } from "../app/uniswap-v3/generated";
 
@@ -79,15 +78,17 @@ const Airdrop = () => {
   }, [])
 
   useEffect(() => {
-    if (active && chainId !== AvailableNetwork) {
-      Injected.getProvider().then((provider) => {
-        provider.send({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: `0x${AvailableNetwork.toString(16)}` }],
-        }, () => {setButtonLoading(false)})
+    if (active && chainId !== AvailableNetwork && library) {
+      library.getProvider().then((provider: any) => {
+        if (provider.isMetaMask) {
+          provider.send({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: `0x${AvailableNetwork.toString(16)}` }],
+          }, () => {setButtonLoading(false)})
+        }
       })
     }
-  }, [active, chainId])
+  }, [active, chainId, library])
 
   const airdropData = useMemo(() => {
     if (!active || !account) return

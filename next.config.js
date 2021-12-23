@@ -1,6 +1,25 @@
 /** @type {import('next').NextConfig} */
-module.exports = {
-  reactStrictMode: true,
+
+const withAntdLess = require('next-plugin-antd-less')
+const withPlugins = require('next-compose-plugins')
+
+const pluginAntdLess = withAntdLess({
+  // modifyVars: {
+  //   '@THEME--DARK': 'theme-dark',
+  // },
+  lessVarsFilePath: './src/styles/variables.less',
+  // cssLoaderOptions: {
+  // esModule: false,
+  // sourceMap: false,
+  // modules: {
+  // mode: 'local',
+  // localIdentName: '[hash:2]',
+  // },
+  // },
+});
+
+module.exports = withPlugins([[pluginAntdLess]], {
+  reactStrictMode: false,
   env: {
     PEOPLELAND_INFURA_KEY: 'dbffd247db694ccdb6506ddc175c48c6',
     PEOPLELAND_ALCHEMY_KEY: '64gGTjEbQ13TNWug6z3SJWLKQTOHRVJ9',
@@ -8,5 +27,8 @@ module.exports = {
     SEO_TITLE: 'Peopleland',
     SEO_DESCRIPTION: 'For the PEOPLE of ConstitutionDAO who made history.',
     SEO_TWITTER: '@peopleland_',
-  }
-}
+  },
+  webpack(config) {
+    return config;
+  },
+})
