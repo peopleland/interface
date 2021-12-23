@@ -11,16 +11,16 @@ import {
 import SwitchNetwork from "../../public/assets/images/switch_network.png"
 import Button from "../components/button";
 import {useWeb3React} from "@web3-react/core";
-import {Injected} from "../hooks/useWallet";
+import {ConnectorNames, Injected} from "../hooks/useWallet";
 import {AirdropContract} from "../app/contract/airdropContract";
 import numeral from "numeral";
 import {useCallback, useEffect, useMemo, useState} from "react";
 import Image from 'next/image'
 import {
   useUniswapV3Builder24HourOpenLazyQuery,
-  useUniswapV3BuilderLazyQuery,
   useUniswapV3DaibuilderPoolLazyQuery,
 } from "../app/uniswap-v3/generated";
+import {getWalletConnectorLocalStorage} from "../lib/helper";
 
 const uniswapSwapURL = "https://app.uniswap.org/#/swap?inputCurrency=0x6b175474e89094c44da98b954eedeac495271d0f&outputCurrency=0x6fbc77cbfc59d201dc03e004203734e0fae10d3e"
 
@@ -79,15 +79,17 @@ const Airdrop = () => {
   }, [])
 
   useEffect(() => {
-    if (active && chainId !== AvailableNetwork) {
-      Injected.getProvider().then((provider) => {
-        provider.send({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: `0x${AvailableNetwork.toString(16)}` }],
-        }, () => {setButtonLoading(false)})
+    if (active && chainId !== AvailableNetwork && library && getWalletConnectorLocalStorage() === ConnectorNames.MetaMask) {
+      Injected.getProvider().then((provider: any) => {
+        if (provider.isMetaMask) {
+          provider.send({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: `0x${AvailableNetwork.toString(16)}` }],
+          }, () => {setButtonLoading(false)})
+        }
       })
     }
-  }, [active, chainId])
+  }, [active, chainId, library])
 
   const airdropData = useMemo(() => {
     if (!active || !account) return

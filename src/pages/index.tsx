@@ -71,7 +71,7 @@ const Home: NextPage = () => {
     console.log({isGived: contract.address})
     contract.getGivedLand(account).then((ret) => {
       setIsGived(ret.isGived)
-    })
+    }).catch(() => {})
   }, [account, contract, loadingMint])
 
   useEffect(() => {
