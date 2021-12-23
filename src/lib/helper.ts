@@ -38,3 +38,11 @@ export function getDeltaTimestamps() {
 export function getBlocksFromTimestamps() {
 
 }
+
+export function setWalletConnectorLocalStorage(name: any) {
+  return window.localStorage.setItem("connector_name", name)
+}
+
+export function getWalletConnectorLocalStorage() {
+  return window.localStorage.getItem("connector_name")
+}
