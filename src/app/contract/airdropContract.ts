@@ -1,6 +1,6 @@
 import {ethers} from "ethers"
 import {ADDRESS_ZERO, AirdropContractAddress, AirdropMerkleTree} from "../../lib/utils"
-import AirdropABI from '../abis/airdrop.json'
+import AirdropABI from './abis/airdrop.json'
 import {BaseContract} from "./index";
 import keccak256 from "keccak256";
 import {parseUnits} from "ethers/lib/utils";

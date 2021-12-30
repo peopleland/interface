@@ -17,7 +17,7 @@ body {
 
 a {
   text-decoration: none;
-  color: #DBDBDB !important;
+  color: #625FF6 !important;
 }
 
 header {
@@ -30,6 +30,10 @@ header {
   color: #DBDBDB;
 }
 
+header > div > div > a {
+  color: #DBDBDB !important;
+}
+
 main {
   color: #FFFFFF;
   padding-top: 60px;
@@ -39,9 +43,38 @@ footer {
   color: #FFFFFF;
 }
 
+.ant-input {
+  background-color: #222529;
+}
+
+.ant-card {
+  background-color: #222529;
+}
+
+.ant-btn {
+  color: #625FF6;
+  border-color: #625FF6;
+}
+
+.ant-btn:hover {
+  color: #625FF6;
+  border-color: #625FF6;
+}
+
+.ant-btn-primary {
+  color: #FFFFFF;
+  border-color: #625FF6;
+  background-color: #625FF6;
+}
+
+.ant-btn-primary:hover {
+  background-color: #625FF6;
+  color: #FFFFFF;
+}
+
 @font-face {
   font-family: 'iconfont';  /* Project id 3006638 */
-  src: url('//at.alicdn.com/t/font_3006638_3139kdtfk8c.woff2?t=1640187969909') format('woff2'),
-  url('//at.alicdn.com/t/font_3006638_3139kdtfk8c.woff?t=1640187969909') format('woff'),
-  url('//at.alicdn.com/t/font_3006638_3139kdtfk8c.ttf?t=1640187969909') format('truetype');
+  src: url('//at.alicdn.com/t/font_3006638_u3btl3fhfb.woff2?t=1640417665871') format('woff2'),
+  url('//at.alicdn.com/t/font_3006638_u3btl3fhfb.woff?t=1640417665871') format('woff'),
+  url('//at.alicdn.com/t/font_3006638_u3btl3fhfb.ttf?t=1640417665871') format('truetype');
 }
