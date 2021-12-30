@@ -1,18 +1,18 @@
 
 .links {
-    position: absolute;
-    top: 16px;
-    left: 2.92rem;
-    display: flex;
-    flex-direction: row;
-    justify-content: left;
-    font-size: 1.14rem;
-    margin-top: 2px;
-    line-height: 24px;
+  position: absolute;
+  top: 16px;
+  left: 2.92rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  font-size: 1.14rem;
+  margin-top: 2px;
+  line-height: 24px;
 }
 
 .links > div {
-    margin-right: 32px;
+  margin-right: 32px;
 }
 
 .links > a {
@@ -20,47 +20,55 @@
 }
 
 .connect {
-    position: absolute;
-    top: 16px;
-    right: 2.92rem;
-    font-size: 1rem;
-    font-weight: bold;
-    line-height: 1.5rem;
-    border: 1px solid #FFFFFF;
-    box-sizing: border-box;
-    border-radius: 4px;
-    cursor: pointer;
+  position: absolute;
+  top: 16px;
+  right: 2.92rem;
+  font-size: 1rem;
+  font-weight: bold;
+  line-height: 1.5rem;
+  border: 1px solid #FFFFFF;
+  box-sizing: border-box;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .connectText {
-    padding: 5px 16px;
-    cursor: pointer;
+  padding: 5px 16px;
+  cursor: pointer;
 }
 
 .testNetwork {
-    color: #fff;
-    display: inline-block;
+  color: #fff;
+  display: inline-block;
 }
 
 .tips {
-    font-size: 12px;
-    line-height: 24px;
-    text-align: center;
-    vertical-align: center;
+  font-size: 12px;
+  line-height: 24px;
+  text-align: center;
+  vertical-align: center;
 }
 
 .pageWrapper {
-    transform: scale(1);
-    background-attachment: fixed;
-    background-image: linear-gradient(to top, transparent, transparent), url('../../public/assets/images/bg.jpg');
-    background-position: 0 0, center;
-    background-repeat: no-repeat;
-    background-size: auto, cover;
-    background-color: #FFFFFF;
+  transform: scale(1);
+  background-attachment: fixed;
+  background-image: linear-gradient(to top, transparent, transparent), url('../../public/assets/images/bg.jpg');
+  background-position: 0 0, center;
+  background-repeat: no-repeat;
+  background-size: auto, cover;
+  background-color: #FFFFFF;
+}
+
+.openerPageWrapper {
+  background-image: linear-gradient(to top, transparent, transparent), url('../../public/assets/images/opener_bg.png');
+  background-position: 0 0, center;
+  background-repeat: no-repeat;
+  background-size: auto, cover;
+  background-color: #FFFFFF;
 }
 
 .page {
-    background-color: rgba(47,49,61,0.929);
+  background-color: rgba(47, 49, 61, 0.929);
 }
 
 .walletModalCard {
@@ -75,8 +83,8 @@
 }
 
 @media (max-width: 750px) {
-    .connect {
-        display: none;
-        position: unset;
-    }
+  .connect {
+    display: none;
+    position: unset;
+  }
 }
