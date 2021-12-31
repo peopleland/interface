@@ -15,12 +15,13 @@ import {getWalletConnectorLocalStorage, setWalletConnectorLocalStorage} from "..
 
 type PageProps = {
   title?: string
+  active?: "opener"
   children: ReactNode
 }
 
-const Page: FC<PageProps> = ({title, children}) => {
+const Page: FC<PageProps> = ({title, active: activePage, children}) => {
 
-  const {active, activate, deactivate, account, chainId, library, connector} = useWeb3React()
+  const {active, activate, deactivate, account, chainId, library} = useWeb3React()
 
   const [isWalletModalVisible, setIsWalletModalVisible] = useState<boolean>(false);
 
@@ -117,6 +118,16 @@ const Page: FC<PageProps> = ({title, children}) => {
     return `${process.env.SEO_TITLE}${title ? ` - ${title}` : ''}`
   }, [title])
 
+  const wrapperClass = useMemo(() => {
+    if (activePage === "opener") return styles.openerPageWrapper
+    return styles.pageWrapper
+  }, [activePage])
+
+  const pageClass = useMemo(() => {
+    if (activePage === "opener") return styles.openerPage
+    return styles.page
+  }, [activePage])
+
   return useMemo(() => (
     <>
       <Head>
@@ -133,12 +144,13 @@ const Page: FC<PageProps> = ({title, children}) => {
         <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no" />
       </Head>
 
-      <div className={styles.pageWrapper}>
-        <div className={styles.page}>
+      <div className={wrapperClass}>
+        <div className={pageClass}>
           <header>
             <div className={styles.links}>
               <div><Link href="/"><a>Home</a></Link></div>
               <div><Link href="/airdrop"><a>Airdrop</a></Link></div>
+              <div><Link href="/opener"><a>Opener</a></Link></div>
               <div><a rel="noreferrer" href="https://opensea.io/collection/people-land"
                       target="_blank">Opensea</a></div>
               <div><a rel="noreferrer" href="https://discord.gg/KNUBFsxxS3" target="_blank">Discord</a>
@@ -167,7 +179,7 @@ const Page: FC<PageProps> = ({title, children}) => {
         </div>
       </div>
     </>
-  ), [children, headerTitle, rightHeader, walletModal])
+  ), [children, headerTitle, pageClass, rightHeader, walletModal, wrapperClass])
 }
 
 export default Page

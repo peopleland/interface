@@ -1,6 +1,6 @@
 import {ethers} from "ethers"
 import {ADDRESS_ZERO, MintContractAddress} from "../../lib/utils"
-import MintABI from '../abis/mint.json'
+import MintABI from './abis/mint.json'
 import {BaseContract} from "./index";
 
 export class MintContract extends BaseContract{

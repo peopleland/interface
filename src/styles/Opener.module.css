@@ -1,0 +1,101 @@
+.opener {
+  text-align: center;
+  font-family: Helvetica;
+}
+
+.headerImg {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 7px;
+}
+
+.rewardTitle {
+  font-weight: 700;
+  font-size: 2.25rem;
+  text-shadow: 0 0 7px #EFB336;
+  margin-top: 3rem;
+}
+
+.rewardDesc {
+  font-style: normal;
+  font-weight: bold;
+  font-size: 1.125rem;
+  text-shadow: 0 0 7px #EFB336;
+  margin-top: 14px;
+}
+
+.bigTitle {
+  margin-top: 6rem;
+  font-weight: bold;
+  font-size: 3rem;
+  text-shadow: 0 0 20px #E9357C;
+}
+
+.desc {
+  max-width: 700px;
+  font-size: 14px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 4.625rem;
+  font-weight: 700;
+}
+
+.ruleTitle {
+  margin-top: 2.875rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.ruleQuestion {
+  margin-top: 2.6rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.ruleDesc {
+  margin-top: 2.6rem;
+  font-size: 14px;
+  font-weight: 300;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 2.0625rem;
+}
+
+.detailLink {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.gameStartTitle {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin-top: 4.6875rem;
+}
+
+.countDownContent {
+  margin-top: 71px;
+  margin-bottom: 101px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  text-align: left;
+}
+
+.countDown {
+  background: #625FF6;
+  border-radius: 10px;
+  width: 167px;
+  height: 216px;
+  margin-right: 39px;
+}
+
+.countDownTitle {
+  padding: 31px 19px;
+}
+
+.countDownText {
+  text-align: center;
+  font-size: 64px;
+  font-weight: bold;
+}
