@@ -2,8 +2,49 @@ import Image from "next/image"
 import styles from "../styles/Opener.module.css"
 import Header from "../../public/assets/images/opener_header.png"
 import Layout from "../components/layout";
+import {useEffect, useMemo, useState} from "react";
+import moment from "moment";
+import {BeginOpenerGameDatetime} from "../lib/utils";
 
 const Opener = () => {
+  const [currentMoment, setCurrentMoment] = useState(moment());
+  useEffect(() => {
+    setInterval(() => {
+      setCurrentMoment(moment())
+    }, 1000)
+  }, [])
+
+  const diffDatetime = useMemo(() => {
+    if (BeginOpenerGameDatetime.isSameOrBefore(currentMoment)) {
+      return moment.duration(0)
+    }
+    return moment.duration(BeginOpenerGameDatetime.diff(currentMoment, 'seconds'), 'seconds').locale("en")
+  }, [currentMoment])
+
+  const countDown = useMemo(() => {
+    return <>
+      <p className={styles.gameStartTitle}>There is still time before the GAME starts ...</p>
+      <div className={styles.countDownContent}>
+        <div className={styles.countDown}>
+          <div className={styles.countDownTitle}>Days</div>
+          <div className={styles.countDownText}>{diffDatetime.days()}</div>
+        </div>
+        <div className={styles.countDown}>
+          <div className={styles.countDownTitle}>Hours</div>
+          <div className={styles.countDownText}>{diffDatetime.hours()}</div>
+        </div>
+        <div className={styles.countDown}>
+          <div className={styles.countDownTitle}>Minutes</div>
+          <div className={styles.countDownText}>{diffDatetime.minutes()}</div>
+        </div>
+        <div className={styles.countDown}>
+          <div className={styles.countDownTitle}>Seconds</div>
+          <div className={styles.countDownText}>{diffDatetime.seconds()}</div>
+        </div>
+      </div>
+    </>
+  }, [diffDatetime])
+
   return <Layout title="Opener" active={"opener"}>
     <div className={styles.opener}>
       <div className={styles.headerImg}><Image src={Header} height={548} width={492} alt={"Opener"}  /></div>
@@ -11,8 +52,8 @@ const Opener = () => {
       <div className={styles.rewardDesc}>(To be unveiled)</div>
       <div className={styles.bigTitle}>For 24 hours Opener</div>
       <div className={styles.desc}>
-        When the clock strikes 2022, the gate to the world of PEOPLELAND will appear in a shimmering light, and 759 landowner will be waiting at the gate to welcome the door opener. The new land lord with the invitation in his hand is the only magic weapon to open the gate; the moment the gate opens, the lucky treasure chest falls from the sky, emitting a dazzling golden light, the last door opener who has been waiting at the gate for 24 hours, he reads &quot;Open Sesame&quot; and opens the treasure chest of the mysterious continent, taking all the treasures... <br/><br/>
-        Honey, are you ready to be the door opener?
+        When the clock struck 2022, the gate of PEOPLELAND was revealed and 759 landowners waited at the door to welcome the Opener. The treasure chest at the door emits a dazzling golden light, and the Opener who has been waiting hard for 24 hours at the door, opens the treasure chest of the mysterious continent and takes away all the treasures... <br/><br/>
+        Guys, are you ready to be the Opener?
       </div>
       <div className={styles.ruleTitle}>Rules</div>
       <div className={styles.ruleQuestion}>Who can get reward?</div>
@@ -24,9 +65,15 @@ const Opener = () => {
       <div className={styles.ruleQuestion}>How can I be an opener?</div>
       <div className={styles.ruleDesc}>The last one to Mint PEOPLELAND</div>
       <div className={styles.ruleQuestion}>How can I be an inviter?</div>
-      <div className={styles.ruleDesc} style={{maxWidth: '900px', marginBottom: "80px"}}>
-        The first way: The owner of PEOPLELAND clicks here to get the invitation link and then sends the invitation link to the donor of ConstitutionDAO who has not yet minted the land, once the other party successfully minted the land, he/she becomes the invitee <br/>
-        The second way: The owner of PEOPLELAND invites anyone using the 0.66 <span style={{fontWeight: "700"}}>$ETH</span> method
+      <div className={styles.ruleDesc} style={{maxWidth: '900px', marginBottom: "40px"}}>
+        First way. The owner of PEOPLELAND NFT gets the invitation link here, then sends the invitation link to a donor of ConstitutionDAO who has not yet minted, and he/she becomes an invitee once the other person has successfully minted <br/>
+        Second way: The owner of PEOPLELAND NFT Invite anyone for 0.66 ETH
+      </div>
+      <div>
+        <a className={styles.detailLink} href="https://peopleland.notion.site/Opener-game-rules-97f84ecf2e9e44428299a6ea1286921e" target={"_blank"} rel="noreferrer">For details, please see {">>>"} </a>
+      </div>
+      <div>
+        {countDown}
       </div>
     </div>
   </Layout>
