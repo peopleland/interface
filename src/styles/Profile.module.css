@@ -66,5 +66,7 @@
 
 .socialButton {
   float: right;
+  position: absolute;
+  right: 1.3125rem;
   width: 112px;
 }

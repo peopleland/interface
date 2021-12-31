@@ -86,6 +86,17 @@
   font-weight: 700;
 }
 
+.dropDownMenu {
+  height: 40px;
+  line-height: 40px;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.dropDownMenu > a {
+  color: #FFFFFF !important;
+}
+
 @media (max-width: 750px) {
   .connect {
     display: none;

@@ -40,9 +40,34 @@ export function getBlocksFromTimestamps() {
 }
 
 export function setWalletConnectorLocalStorage(name: any) {
-  return window.localStorage.setItem("connector_name", name)
+  return localStorage.setItem("connector_name", name)
+}
+
+export function setJWTLocalStorage(jwt: any) {
+  return localStorage.setItem("jwt", jwt)
+}
+
+export function getJWTLocalStorage() {
+  return localStorage.getItem("jwt")
+}
+
+export function clearJWTLocalStorage() {
+  return localStorage.setItem("jwt", "")
+}
+
+export function setJWTExpiredLocalStorage() {
+  return localStorage.setItem("jwt_expired", (moment.now() + 24 * 60 * 60 - 5 * 60).toString())
+}
+
+export function clearJWTExpiredLocalStorage() {
+  return localStorage.setItem("jwt_expired", "0")
+}
+
+export function getJWTExpired() {
+  const expired = localStorage.getItem("jwt_expired") || '0'
+  return parseInt(expired, 10) <= moment.now()
 }
 
 export function getWalletConnectorLocalStorage() {
-  return window.localStorage.getItem("connector_name")
+  return localStorage.getItem("connector_name")
 }

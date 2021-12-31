@@ -4,14 +4,23 @@ import {FC, ReactNode, useCallback, useEffect, useMemo, useState} from "react";
 import {useWeb3React} from "@web3-react/core"
 import {ConnectorNames, ConnectorsByName, Injected} from "../hooks/useWallet";
 import Link from 'next/link'
-import Head from "next/head";
-import {Card, Modal} from 'antd';
+import Head from "next/head"
+import { useRouter } from 'next/router'
+import {Card, Dropdown, Menu, Modal} from 'antd';
 import Image from "next/image";
 import MetamaskLogo from "../../public/assets/images/metamask.svg"
 import WalletConnectLogo from "../../public/assets/images/walletconnect.svg"
 import Coinbase from "../../public/assets/images/coinbase.svg"
 import Netlify from "../../public/assets/images/netlify.svg"
-import {getWalletConnectorLocalStorage, setWalletConnectorLocalStorage} from "../lib/helper";
+import {
+  clearJWTExpiredLocalStorage,
+  clearJWTLocalStorage, getJWTExpired, getJWTLocalStorage,
+  getWalletConnectorLocalStorage, setJWTExpiredLocalStorage,
+  setJWTLocalStorage,
+  setWalletConnectorLocalStorage
+} from "../lib/helper";
+import {UserLogin} from "../app/backend/user/User";
+import {LogoutOutlined, UserOutlined} from "@ant-design/icons";
 
 type PageProps = {
   title?: string
@@ -20,7 +29,7 @@ type PageProps = {
 }
 
 const Page: FC<PageProps> = ({title, active: activePage, children}) => {
-
+  const router = useRouter()
   const {active, activate, deactivate, account, chainId, library} = useWeb3React()
 
   const [isWalletModalVisible, setIsWalletModalVisible] = useState<boolean>(false);
@@ -38,24 +47,55 @@ const Page: FC<PageProps> = ({title, active: activePage, children}) => {
     }
   }, [deactivate])
 
+  const signatureMsg = useMemo(() => {
+    return `Welcome to PeopleLand!
+
+Click to sign in and accept the PeopleLand Terms of Service.
+
+This request will not trigger a blockchain transaction or cost any gas fees.
+
+Your authentication status will reset after 24 hours.
+
+Wallet address:
+${account}`
+  }, [account])
+
+  const handleProfile = useCallback(async () => {
+    if (!library || !account) return
+    if (getJWTExpired() && getJWTLocalStorage()) {
+      await router.push("/profile")
+      return
+    }
+    library.getSigner().signMessage(signatureMsg).then((signed: any) => {
+      UserLogin({
+        address: account,
+        signature: signed,
+        origin_message: signatureMsg
+      }).then((resp) => {
+        setJWTLocalStorage(resp.jwt)
+        setJWTExpiredLocalStorage()
+        router.push("/profile")
+      })
+    })
+  }, [account, library, router, signatureMsg])
+
+  const checkLibExisted = useCallback(() => {
+    if (library) {
+      setIsWalletModalVisible(false)
+    } else {
+      setTimeout(checkLibExisted, 1000)
+    }
+  }, [library])
+
   const connect = useCallback(async (name: ConnectorNames) => {
     try {
       await activate(ConnectorsByName[name])
-      setIsWalletModalVisible(false)
+      checkLibExisted()
       setWalletConnectorLocalStorage(name)
     } catch (ex) {
       console.log(ex)
     }
-  }, [activate])
-
-  useEffect(() => {
-    if (!library) return
-    // library.getSigner().signMessage("Hello World!").then((signed: any) => {
-    //   console.log({signed})
-    //   console.log(typeof library)
-    //   console.log(library, library.connection.url)
-    // })
-  }, [library])
+  }, [activate, checkLibExisted])
 
   useEffect(() => {
     if (!active && getWalletConnectorLocalStorage() === ConnectorNames.MetaMask) {
@@ -67,21 +107,42 @@ const Page: FC<PageProps> = ({title, active: activePage, children}) => {
     }
   }, [active, connect])
 
+  const handleLogout = useCallback(async () => {
+    clearJWTLocalStorage()
+    clearJWTExpiredLocalStorage()
+    disConnect()
+  }, [disConnect])
+
+  const loginDropdown = useMemo(() => {
+    return <Menu>
+      <Menu.Item key="profile" icon={<UserOutlined style={{fontSize: "24px"}} />}>
+        <div className={styles.dropDownMenu} onClick={handleProfile}>
+          Profile
+        </div>
+      </Menu.Item>
+      <Menu.Item key="logout" icon={<LogoutOutlined style={{fontSize: "24px"}} />}>
+        <div className={styles.dropDownMenu} onClick={handleLogout}>Log Out</div>
+      </Menu.Item>
+    </Menu>
+  }, [handleLogout, handleProfile])
+
   const rightHeader = useMemo(() => {
     if (account && chainId) {
       let networkDom
       if (chainId !== 1) networkDom = <div className={styles.testNetwork}>[{EthereumNetwork[chainId]}]&nbsp;</div>
-      return <div className={styles.connect} onClick={disConnect}>
-        <div className={styles.connectText}>
-          {!!networkDom && networkDom}
-          {account?.substr(0, 6)}...{account?.substr(-4)}
+      return <Dropdown overlay={loginDropdown}>
+        <div className={styles.connect}>
+          <div className={styles.connectText}>
+            {!!networkDom && networkDom}
+            {account?.substr(0, 6)}...{account?.substr(-4)}
+          </div>
         </div>
-      </div>
+      </Dropdown>
     }
     return <div className={styles.connect} onClick={connectMetamask}>
       <div className={styles.connectText}>Connect Wallet</div>
     </div>
-  }, [account, chainId, connectMetamask, disConnect])
+  }, [account, chainId, connectMetamask, disConnect, loginDropdown])
 
   const walletModal = useMemo(() => {
     return <Modal
