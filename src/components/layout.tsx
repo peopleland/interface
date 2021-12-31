@@ -123,6 +123,11 @@ const Page: FC<PageProps> = ({title, active: activePage, children}) => {
     return styles.pageWrapper
   }, [activePage])
 
+  const pageClass = useMemo(() => {
+    if (activePage === "opener") return styles.openerPage
+    return styles.page
+  }, [activePage])
+
   return useMemo(() => (
     <>
       <Head>
@@ -140,7 +145,7 @@ const Page: FC<PageProps> = ({title, active: activePage, children}) => {
       </Head>
 
       <div className={wrapperClass}>
-        <div className={styles.page}>
+        <div className={pageClass}>
           <header>
             <div className={styles.links}>
               <div><Link href="/"><a>Home</a></Link></div>
@@ -174,7 +179,7 @@ const Page: FC<PageProps> = ({title, active: activePage, children}) => {
         </div>
       </div>
     </>
-  ), [children, headerTitle, rightHeader, walletModal, wrapperClass])
+  ), [children, headerTitle, pageClass, rightHeader, walletModal, wrapperClass])
 }
 
 export default Page
