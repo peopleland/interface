@@ -57,7 +57,7 @@ const Opener = () => {
       </div>
       <div className={styles.ruleTitle}>Rules</div>
       <div className={styles.ruleQuestion}>Who can get reward?</div>
-      <div className={styles.ruleDesc} style={{maxWidth: '680px'}}>
+      <div className={styles.ruleDesc} style={{maxWidth: '700px'}}>
         If you keep playing as an Opener for more than 24 hours, you will open the treasure chest and get the reward <br/>
         Opener get 60% (30,000 $BUILDER + ??? $ETH) <br/>
         Opener&apos;s inviter get 40% (20,000 $BUILDER + ??? $ETH)
@@ -66,8 +66,8 @@ const Opener = () => {
       <div className={styles.ruleDesc}>The last one to Mint PEOPLELAND</div>
       <div className={styles.ruleQuestion}>How can I be an inviter?</div>
       <div className={styles.ruleDesc} style={{maxWidth: '900px', marginBottom: "40px"}}>
-        First way. The owner of PEOPLELAND NFT gets the invitation link here, then sends the invitation link to a donor of ConstitutionDAO who has not yet minted, and he/she becomes an invitee once the other person has successfully minted <br/>
-        Second way: The owner of PEOPLELAND NFT Invite anyone for 0.66 ETH
+        <span style={{fontWeight: 700}}>First way:</span> The owner of PEOPLELAND NFT gets the invitation link here, then sends the invitation link to a donor of ConstitutionDAO who has not yet minted, and he/she becomes an inviter once the other person has successfully minted <br/>
+        <span style={{fontWeight: 700}}>Second way:</span> The owner of PEOPLELAND NFT Invite anyone for 0.66 ETH
       </div>
       <div>
         <a className={styles.detailLink} href="https://peopleland.notion.site/Opener-game-rules-97f84ecf2e9e44428299a6ea1286921e" target={"_blank"} rel="noreferrer">For details, please see {">>>"} </a>
