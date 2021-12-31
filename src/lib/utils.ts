@@ -31,3 +31,5 @@ export const AirdropMerkleTree = genAirdropMerkleTree(AirdropList)
 const ProdAirdropContractAddress = "0x98080C43486FfA945f7FA4A7d40B699Ff404798B"
 const TestAirdropContractAddress = "0x98080C43486FfA945f7FA4A7d40B699Ff404798B"
 export const AirdropContractAddress = IsDEV ? TestAirdropContractAddress : ProdAirdropContractAddress
+
+export const BeginOpenerGameDatetime = IsDEV ? moment.unix(1641816000) : moment.unix(1641816000)

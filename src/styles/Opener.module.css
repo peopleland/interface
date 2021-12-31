@@ -60,3 +60,41 @@
   margin-right: auto;
   line-height: 2.0625rem;
 }
+
+.detailLink {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.gameStartTitle {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin-top: 4.6875rem;
+}
+
+.countDownContent {
+  margin-top: 71px;
+  margin-bottom: 101px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  text-align: left;
+}
+
+.countDown {
+  background: #625FF6;
+  border-radius: 10px;
+  width: 167px;
+  height: 216px;
+  margin-right: 39px;
+}
+
+.countDownTitle {
+  padding: 31px 19px;
+}
+
+.countDownText {
+  text-align: center;
+  font-size: 64px;
+  font-weight: bold;
+}
