@@ -2,6 +2,7 @@ import {BigNumber, ethers} from "ethers";
 import keccak256 from "keccak256";
 import {MerkleTree} from "merkletreejs"
 import moment from "moment";
+import {ConnectorNames} from "../hooks/useWallet";
 
 export function genAirdropMerkleTree(listData: any) {
     const elements = [];
@@ -56,7 +57,7 @@ export function clearJWTLocalStorage() {
 }
 
 export function setJWTExpiredLocalStorage() {
-  return localStorage.setItem("jwt_expired", (moment.now() + 24 * 60 * 60 - 5 * 60).toString())
+  return localStorage.setItem("jwt_expired", (moment.now() / 1000 + 24 * 60 * 60 - 5 * 60).toString(10))
 }
 
 export function clearJWTExpiredLocalStorage() {
@@ -65,9 +66,17 @@ export function clearJWTExpiredLocalStorage() {
 
 export function getJWTExpired() {
   const expired = localStorage.getItem("jwt_expired") || '0'
-  return parseInt(expired, 10) <= moment.now()
+  return parseInt(expired, 10) < moment.now() / 1000
 }
 
 export function getWalletConnectorLocalStorage() {
-  return localStorage.getItem("connector_name")
+  return localStorage.getItem("connector_name") as ConnectorNames
+}
+
+export function saveUserProfile(profile: any) {
+  return localStorage.setItem("profile", JSON.stringify(profile))
+}
+
+export function getLocalUserProfile() {
+  return JSON.parse(localStorage.getItem("profile") || "{}")
 }

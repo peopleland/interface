@@ -2,6 +2,24 @@
 /* eslint-disable */
 import request from '../../../lib/request';
 
+/** 此处后端没有提供注释 PUT /user/v1/connect/discord */
+export async function UserConnectDiscord(
+  body: API.v1ConnectDiscordPayLoad,
+  options?: { [key: string]: any },
+) {
+  return request<API.v1ConnectDiscordResponse>(
+    `${process.env.NEXT_PUBLIC_BACKEND_URL + '/.netlify/functions'}/user/v1/connect/discord`,
+    {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: body,
+      ...(options || {}),
+    },
+  );
+}
+
 /** 此处后端没有提供注释 PUT /user/v1/connect/telegram */
 export async function UserConnectTelegram(
   body: API.v1ConnectTelegramPayLoad,
@@ -91,6 +109,42 @@ export async function UserPutProfile(
     `${process.env.NEXT_PUBLIC_BACKEND_URL + '/.netlify/functions'}/user/v1/profile`,
     {
       method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: body,
+      ...(options || {}),
+    },
+  );
+}
+
+/** 此处后端没有提供注释 POST /user/v1/social/disconnect */
+export async function UserDisconnectSocial(
+  body: API.v1DisconnectSocialPayLoad,
+  options?: { [key: string]: any },
+) {
+  return request<API.v1DisconnectSocialResponse>(
+    `${process.env.NEXT_PUBLIC_BACKEND_URL + '/.netlify/functions'}/user/v1/social/disconnect`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: body,
+      ...(options || {}),
+    },
+  );
+}
+
+/** 此处后端没有提供注释 POST /user/v1/telegram/webhooks/dm */
+export async function UserTelegramBotDMWebhooks(
+  body: API.v1TelegramBotDMWebhooksPayLoad,
+  options?: { [key: string]: any },
+) {
+  return request<API.v1TelegramBotDMWebhooksResponse>(
+    `${process.env.NEXT_PUBLIC_BACKEND_URL + '/.netlify/functions'}/user/v1/telegram/webhooks/dm`,
+    {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },

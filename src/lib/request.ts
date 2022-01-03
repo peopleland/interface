@@ -1,11 +1,10 @@
 import type { RequestOptionsInit } from 'umi-request';
-import {getJWTExpired, getJWTLocalStorage} from "./helper";
+import {clearJWTExpiredLocalStorage, clearJWTLocalStorage, getJWTExpired, getJWTLocalStorage} from "./helper";
 import { extend } from 'umi-request';
 
 const authHeaderInterceptor = (url: string, options: RequestOptionsInit) => {
   const auth = getJWTLocalStorage();
-  console.log(auth && getJWTExpired())
-  if (auth && getJWTExpired()) {
+  if (auth && !getJWTExpired()) {
     return {
       url,
       options: { ...options, interceptors: true, headers: { Authorization: `${auth}` } },
@@ -26,10 +25,12 @@ request.interceptors.response.use(
     const origin = await response.clone().json()
     const {data, error} = origin
     if (error) {
-      if (error === "error.common.not_login") {
+      if (error === "unauthorized") {
+        clearJWTExpiredLocalStorage()
+        clearJWTLocalStorage()
         location.href = "/"
       }
-      return
+      return response
     }
     return data
   }

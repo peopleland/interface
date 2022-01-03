@@ -30,7 +30,7 @@ type PageProps = {
 
 const Page: FC<PageProps> = ({title, active: activePage, children}) => {
   const router = useRouter()
-  const {active, activate, deactivate, account, chainId, library} = useWeb3React()
+  const {active, activate, deactivate, account, chainId, library, connector} = useWeb3React()
 
   const [isWalletModalVisible, setIsWalletModalVisible] = useState<boolean>(false);
 
@@ -61,12 +61,12 @@ ${account}`
   }, [account])
 
   const handleProfile = useCallback(async () => {
-    if (!library || !account) return
-    if (getJWTExpired() && getJWTLocalStorage()) {
+    if (!active || !account) return
+    if (!getJWTExpired() && getJWTLocalStorage()) {
       await router.push("/profile")
       return
     }
-    library.getSigner().signMessage(signatureMsg).then((signed: any) => {
+    library?.getSigner().signMessage(signatureMsg).then((signed: any) => {
       UserLogin({
         address: account,
         signature: signed,
@@ -77,25 +77,17 @@ ${account}`
         router.push("/profile")
       })
     })
-  }, [account, library, router, signatureMsg])
-
-  const checkLibExisted = useCallback(() => {
-    if (library) {
-      setIsWalletModalVisible(false)
-    } else {
-      setTimeout(checkLibExisted, 1000)
-    }
-  }, [library])
+  }, [account, active, library, router, signatureMsg])
 
   const connect = useCallback(async (name: ConnectorNames) => {
     try {
       await activate(ConnectorsByName[name])
-      checkLibExisted()
+      setIsWalletModalVisible(false)
       setWalletConnectorLocalStorage(name)
     } catch (ex) {
       console.log(ex)
     }
-  }, [activate, checkLibExisted])
+  }, [activate])
 
   useEffect(() => {
     if (!active && getWalletConnectorLocalStorage() === ConnectorNames.MetaMask) {
@@ -142,7 +134,7 @@ ${account}`
     return <div className={styles.connect} onClick={connectMetamask}>
       <div className={styles.connectText}>Connect Wallet</div>
     </div>
-  }, [account, chainId, connectMetamask, disConnect, loginDropdown])
+  }, [account, chainId, connectMetamask, loginDropdown])
 
   const walletModal = useMemo(() => {
     return <Modal
