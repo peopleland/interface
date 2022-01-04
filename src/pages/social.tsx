@@ -15,11 +15,16 @@ import {
   UserDisconnectSocial
 } from "../app/backend/user/User";
 import {useCallback, useEffect, useMemo, useState} from "react";
-import {getJWTExpired, getJWTLocalStorage} from "../lib/helper";
+import {getJWTExpired, getJWTLocalStorage, getLocalUserProfile} from "../lib/helper";
 import {useRouter} from "next/router";
+import {actionSign} from "../store/signAction";
+import {useAppDispatch} from "../store/hooks";
+import {useWeb3React} from "@web3-react/core";
 
 const Social = () => {
   const router = useRouter()
+  const dispatch = useAppDispatch();
+  const {active} = useWeb3React()
   const [twitterModalVisible, setTwitterModalVisible] = useState<boolean>(false);
   const [twitterStep2ModalVisible, setTwitterStep2ModalVisible] = useState<boolean>(false);
   const [discordModalVisible, setDiscordModalVisible] = useState<boolean>(false);
@@ -45,12 +50,21 @@ const Social = () => {
   }, [])
 
   useEffect(() => {
-    if (getJWTExpired() || !getJWTLocalStorage()) {
+    if (!active) {
+      message.info("Please Connect Wallet")
       router.push("/")
-      message.info("First click 'Profile' to log in!")
       return
     }
-  }, [router])
+    if (getJWTExpired() || !getJWTLocalStorage()) {
+      dispatch(actionSign(true))
+      return
+    }
+    if (!getLocalUserProfile().name) {
+      router.push("/profile")
+      message.info("First click 'Profile' to save your username!")
+      return
+    }
+  }, [active, dispatch, router])
 
   useEffect(() => {
     setDiscordVerifyURL(
@@ -168,6 +182,7 @@ const Social = () => {
                   onOk={() => {
                     setTwitterModalVisible(false)
                     setTwitterStep2ModalVisible(true)
+                    open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`I am verifying my identity as ${data?.name || ""} on peopleland`)}`, "_blank")
                   }} onCancel={() => setTwitterModalVisible(false)}>
       <p>We want to verify your Twitter account. To do so, you must first send a standardized Tweet from your account, then we’ll vaildate it’s there.</p>
       <p>The Tweet should say:</p>

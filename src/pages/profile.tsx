@@ -5,7 +5,7 @@ import {LoadingOutlined} from "@ant-design/icons";
 import {useRequest} from "ahooks";
 import {UserGetProfile, UserPutProfile} from "../app/backend/user/User";
 import {useCallback, useEffect, useMemo} from "react";
-import {saveUserProfile} from "../lib/helper";
+import {getJWTExpired, getJWTLocalStorage, saveUserProfile} from "../lib/helper";
 import {useWeb3React} from "@web3-react/core";
 import {useRouter} from "next/router";
 
@@ -16,6 +16,12 @@ const Profile = () => {
     if (!active) {
       message.info("Please Connect Wallet")
       router.push("/")
+      return
+    }
+    if (getJWTExpired() || !getJWTLocalStorage()) {
+      router.push("/")
+      message.info("First click 'Profile' to log in!")
+      return
     }
   }, [active, router])
   const {data, error, loading, refresh} = useRequest(UserGetProfile)
