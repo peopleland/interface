@@ -5,13 +5,12 @@ import Layout from "../../components/layout";
 import {useCallback, useEffect, useMemo, useState} from "react";
 import moment from "moment";
 import {BeginOpenerGameDatetime} from "../../lib/utils";
-import {UserGetProfile} from "../../app/backend/user/User";
 import {useWeb3React} from "@web3-react/core";
 import {useAppDispatch} from "../../store/hooks";
 import {actionModal} from "../../store/walletModal";
-import {getJWTExpired, getJWTLocalStorage, saveUserProfile} from "../../lib/helper";
-import {useRouter} from "next/router";
+import {getJWTExpired, getJWTLocalStorage} from "../../lib/helper";
 import {actionSign} from "../../store/signAction";
+import {useRouter} from "next/router";
 
 const Opener = () => {
   const [currentMoment, setCurrentMoment] = useState(moment());
@@ -57,11 +56,11 @@ const Opener = () => {
 
   const handlerGoInvitation = useCallback(() => {
     if (!active) {
-      dispatch(actionModal(true))
+      dispatch(actionModal({visible: true, thenSign: true, callback: "/opener/invitation"}))
       return
     }
     if (getJWTExpired() || !getJWTLocalStorage()) {
-      dispatch(actionSign(true))
+      dispatch(actionSign({action: true, callback: "/opener/invitation"}))
       return
     }
     router.push("/opener/invitation")

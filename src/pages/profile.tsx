@@ -8,23 +8,29 @@ import {useCallback, useEffect, useMemo} from "react";
 import {getJWTExpired, getJWTLocalStorage, saveUserProfile} from "../lib/helper";
 import {useWeb3React} from "@web3-react/core";
 import {useRouter} from "next/router";
+import {actionModal} from "../store/walletModal";
+import {actionSign} from "../store/signAction";
+import {useAppDispatch} from "../store/hooks";
 
 const Profile = () => {
   const router = useRouter()
   const {active} = useWeb3React()
+  const dispatch = useAppDispatch();
+
+  const {data, error, loading, refresh, run} = useRequest(UserGetProfile, {manual: true})
+
   useEffect(() => {
     if (!active) {
-      message.info("Please Connect Wallet")
-      router.push("/")
+      dispatch(actionModal({visible: true, thenSign: true, callback: "/profile"}))
       return
     }
     if (getJWTExpired() || !getJWTLocalStorage()) {
-      router.push("/")
-      message.info("First click 'Profile' to log in!")
+      dispatch(actionSign({action: true, callback: "/profile"}))
       return
     }
-  }, [active, router])
-  const {data, error, loading, refresh} = useRequest(UserGetProfile)
+    run()
+  }, [active, dispatch, router, run])
+
   const [form] = Form.useForm();
   useEffect(() => {
     if (data) {

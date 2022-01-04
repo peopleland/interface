@@ -20,6 +20,7 @@ import {useRouter} from "next/router";
 import {actionSign} from "../store/signAction";
 import {useAppDispatch} from "../store/hooks";
 import {useWeb3React} from "@web3-react/core";
+import {actionModal} from "../store/walletModal";
 
 const Social = () => {
   const router = useRouter()
@@ -42,7 +43,7 @@ const Social = () => {
   })
 
   useEffect(() => {
-    if (location.host.includes("peopleland.space")) {
+    if (process.env.NEXT_PUBLIC_RUN_ENV !== "PROD") {
       setTelegramBotURL("https://t.me/peopleland_bot")
     } else {
       setTelegramBotURL("https://t.me/peopleland_test_bot")
@@ -51,17 +52,16 @@ const Social = () => {
 
   useEffect(() => {
     if (!active) {
-      message.info("Please Connect Wallet")
-      router.push("/")
+      dispatch(actionModal({visible: true, thenSign: true, callback: "/social"}))
       return
     }
     if (getJWTExpired() || !getJWTLocalStorage()) {
-      dispatch(actionSign(true))
+      dispatch(actionSign({action: true, callback: "/social"}))
       return
     }
     if (!getLocalUserProfile().name) {
       router.push("/profile")
-      message.info("First click 'Profile' to save your username!")
+      message.info("First save your username!")
       return
     }
   }, [active, dispatch, router])
