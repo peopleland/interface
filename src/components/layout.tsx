@@ -14,7 +14,7 @@ import Coinbase from "../../public/assets/images/coinbase.svg"
 import Netlify from "../../public/assets/images/netlify.svg"
 import {
   clearJWTExpiredLocalStorage,
-  clearJWTLocalStorage, getJWTExpired, getJWTLocalStorage,
+  clearJWTLocalStorage, clearLocalUserProfile, getJWTExpired, getJWTLocalStorage,
   getWalletConnectorLocalStorage, saveUserProfile, setJWTExpiredLocalStorage,
   setJWTLocalStorage,
   setWalletConnectorLocalStorage
@@ -37,7 +37,7 @@ const Page: FC<PageProps> = ({title, active: activePage, children}) => {
   const dispatch = useAppDispatch();
   const isWalletModalVisible = useAppSelector((state: RootState) => state.walletModal.visible)
   const isSignAction = useAppSelector((state: RootState) => state.signAction.action)
-  const {active, activate, deactivate, account, chainId, library} = useWeb3React()
+  const {active, activate, deactivate, account, chainId, library, connector} = useWeb3React()
 
   const setIsWalletModalVisible = useCallback((visible: boolean) => {
     dispatch(actionModal(visible))
@@ -87,6 +87,19 @@ ${account}`
     })
   }, [account, library, router, signatureMsg])
 
+  const handleClear = useCallback(() => {
+    clearJWTLocalStorage()
+    clearJWTExpiredLocalStorage()
+    clearLocalUserProfile()
+  }, [])
+
+  useEffect(() => {
+    if (!connector) return
+    connector.on("accountsChanged", () => {
+      handleClear()
+    })
+  }, [connector, handleClear])
+
   const handleProfile = useCallback(async () => {
     if (!active || !account) return
     if (!getJWTExpired() && getJWTLocalStorage()) {
@@ -124,10 +137,9 @@ ${account}`
   }, [active, connect])
 
   const handleLogout = useCallback(async () => {
-    clearJWTLocalStorage()
-    clearJWTExpiredLocalStorage()
+    handleClear()
     disConnect()
-  }, [disConnect])
+  }, [disConnect, handleClear])
 
   const loginDropdown = useMemo(() => {
     return <Menu>

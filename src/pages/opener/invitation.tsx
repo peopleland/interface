@@ -1,23 +1,21 @@
-import {useRouter} from "next/router";
 import {useCallback, useEffect, useMemo, useState} from "react";
-import {Button, Col, Form, Input, message, Row, Space, Spin, Tooltip} from "antd";
+import {Button, Col, Input, message, Row, Space, Spin, Tooltip} from "antd";
 import {useRequest} from "ahooks";
 import {UserGenVerifyCode} from "../../app/backend/user/User";
 import Layout from "../../components/layout";
 import {CheckOutlined, CopyOutlined, LoadingOutlined} from "@ant-design/icons";
 import styles from "../../styles/Opener.module.css";
-import {getLocalUserProfile} from "../../lib/helper";
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 
 const Invitation = () => {
-  const router = useRouter()
-  useEffect(() => {
-    const profile = getLocalUserProfile()
-    if (!(profile.discord?.id && profile.twitter)) {
-      message.info("Please Connect Social Account!")
-      router.push("/social")
-    }
-  }, [router])
+  // const router = useRouter()
+  // useEffect(() => {
+  //   const profile = getLocalUserProfile()
+  //   if (!(profile.discord?.id && profile.twitter)) {
+  //     message.info("Please Connect Social Account!")
+  //     router.push("/social")
+  //   }
+  // }, [router])
 
   const [link, setLink] = useState<string>()
   const [copyed, setCopyed] = useState<boolean>(false)

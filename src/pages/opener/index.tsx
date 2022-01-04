@@ -64,10 +64,7 @@ const Opener = () => {
       dispatch(actionSign(true))
       return
     }
-    UserGetProfile().then((data) => {
-      saveUserProfile(data)
-      router.push("/opener/invitation")
-    })
+    router.push("/opener/invitation")
   }, [active, dispatch, router])
 
   return <Layout title="Opener" active={"opener"}>

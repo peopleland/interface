@@ -80,3 +80,7 @@ export function saveUserProfile(profile: any) {
 export function getLocalUserProfile() {
   return JSON.parse(localStorage.getItem("profile") || "{}")
 }
+
+export function clearLocalUserProfile() {
+  return saveUserProfile({})
+}
