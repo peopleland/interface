@@ -153,8 +153,9 @@ ${account}`
 
   const handleLogout = useCallback(async () => {
     handleClear()
-    disConnect()
-  }, [disConnect, handleClear])
+    await disConnect()
+    await router.push("/")
+  }, [disConnect, handleClear, router])
 
   const loginDropdown = useMemo(() => {
     return <Menu>
