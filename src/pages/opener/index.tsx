@@ -70,7 +70,7 @@ const Opener = () => {
     })
   }, [active, dispatch, router])
 
-  return <Layout title="Opener">
+  return <Layout title="Opener" active={"opener"}>
     <div className={styles.opener}>
       <div className={styles.headerImg}><Image src={Header} height={548} width={492} alt={"Opener"}  /></div>
       <div className={styles.rewardTitle}>50,000 $BUILDER + ??? $ETH</div>
