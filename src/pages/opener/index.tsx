@@ -11,9 +11,11 @@ import {actionModal} from "../../store/walletModal";
 import {getJWTExpired, getJWTLocalStorage} from "../../lib/helper";
 import {actionSign} from "../../store/signAction";
 import {useRouter} from "next/router";
+import {LoadingOutlined} from "@ant-design/icons";
 
 const Opener = () => {
   const [currentMoment, setCurrentMoment] = useState(moment());
+  const [goLinkLoading, setGoLinkLoading] = useState<boolean>(false);
   const { active } = useWeb3React();
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -55,6 +57,7 @@ const Opener = () => {
   }, [diffDatetime])
 
   const handlerGoInvitation = useCallback(() => {
+    setGoLinkLoading(true)
     if (!active) {
       dispatch(actionModal({visible: true, thenSign: true, callback: "/opener/invitation"}))
       return
@@ -95,6 +98,9 @@ const Opener = () => {
       </div>
       <div>
         <a className={styles.detailLink} onClick={handlerGoInvitation}>Get invitation link {">>>"}</a>
+      </div>
+      <div style={{marginTop: "20px"}}>
+        {goLinkLoading && <LoadingOutlined style={{fontSize: 20}} />}
       </div>
       <div>
         {countDown}
