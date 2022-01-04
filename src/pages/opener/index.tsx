@@ -1,13 +1,24 @@
 import Image from "next/image"
-import styles from "../styles/Opener.module.css"
-import Header from "../../public/assets/images/opener_header.png"
-import Layout from "../components/layout";
-import {useEffect, useMemo, useState} from "react";
+import styles from "../../styles/Opener.module.css"
+import Header from "../../../public/assets/images/opener_header.png"
+import Layout from "../../components/layout";
+import {useCallback, useEffect, useMemo, useState} from "react";
 import moment from "moment";
-import {BeginOpenerGameDatetime} from "../lib/utils";
+import {BeginOpenerGameDatetime} from "../../lib/utils";
+import {useWeb3React} from "@web3-react/core";
+import {useAppDispatch} from "../../store/hooks";
+import {actionModal} from "../../store/walletModal";
+import {getJWTExpired, getJWTLocalStorage} from "../../lib/helper";
+import {actionSign} from "../../store/signAction";
+import {useRouter} from "next/router";
+import {LoadingOutlined} from "@ant-design/icons";
 
 const Opener = () => {
   const [currentMoment, setCurrentMoment] = useState(moment());
+  const [goLinkLoading, setGoLinkLoading] = useState<boolean>(false);
+  const { active } = useWeb3React();
+  const dispatch = useAppDispatch();
+  const router = useRouter();
   useEffect(() => {
     setInterval(() => {
       setCurrentMoment(moment())
@@ -45,6 +56,19 @@ const Opener = () => {
     </>
   }, [diffDatetime])
 
+  const handlerGoInvitation = useCallback(() => {
+    setGoLinkLoading(true)
+    if (!active) {
+      dispatch(actionModal({visible: true, thenSign: true, callback: "/opener/invitation"}))
+      return
+    }
+    if (getJWTExpired() || !getJWTLocalStorage()) {
+      dispatch(actionSign({action: true, callback: "/opener/invitation"}))
+      return
+    }
+    router.push("/opener/invitation")
+  }, [active, dispatch, router])
+
   return <Layout title="Opener" active={"opener"}>
     <div className={styles.opener}>
       <div className={styles.headerImg}><Image src={Header} height={548} width={492} alt={"Opener"}  /></div>
@@ -71,6 +95,12 @@ const Opener = () => {
       </div>
       <div>
         <a className={styles.detailLink} href="https://peopleland.notion.site/Opener-game-rules-97f84ecf2e9e44428299a6ea1286921e" target={"_blank"} rel="noreferrer">For details, please see {">>>"} </a>
+      </div>
+      <div>
+        <a className={styles.detailLink} onClick={handlerGoInvitation}>Get invitation link {">>>"}</a>
+      </div>
+      <div style={{marginTop: "20px"}}>
+        {goLinkLoading && <LoadingOutlined style={{fontSize: 20}} />}
       </div>
       <div>
         {countDown}
