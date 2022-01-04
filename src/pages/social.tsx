@@ -19,10 +19,12 @@ import {getJWTExpired, getJWTLocalStorage, getLocalUserProfile} from "../lib/hel
 import {useRouter} from "next/router";
 import {actionSign} from "../store/signAction";
 import {useAppDispatch} from "../store/hooks";
+import {useWeb3React} from "@web3-react/core";
 
 const Social = () => {
   const router = useRouter()
   const dispatch = useAppDispatch();
+  const {active} = useWeb3React()
   const [twitterModalVisible, setTwitterModalVisible] = useState<boolean>(false);
   const [twitterStep2ModalVisible, setTwitterStep2ModalVisible] = useState<boolean>(false);
   const [discordModalVisible, setDiscordModalVisible] = useState<boolean>(false);
@@ -48,6 +50,11 @@ const Social = () => {
   }, [])
 
   useEffect(() => {
+    if (!active) {
+      message.info("Please Connect Wallet")
+      router.push("/")
+      return
+    }
     if (getJWTExpired() || !getJWTLocalStorage()) {
       dispatch(actionSign(true))
       return
@@ -57,7 +64,7 @@ const Social = () => {
       message.info("First click 'Profile' to save your username!")
       return
     }
-  }, [router])
+  }, [active, dispatch, router])
 
   useEffect(() => {
     setDiscordVerifyURL(

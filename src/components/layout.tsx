@@ -15,11 +15,11 @@ import Netlify from "../../public/assets/images/netlify.svg"
 import {
   clearJWTExpiredLocalStorage,
   clearJWTLocalStorage, getJWTExpired, getJWTLocalStorage,
-  getWalletConnectorLocalStorage, setJWTExpiredLocalStorage,
+  getWalletConnectorLocalStorage, saveUserProfile, setJWTExpiredLocalStorage,
   setJWTLocalStorage,
   setWalletConnectorLocalStorage
 } from "../lib/helper";
-import {UserLogin} from "../app/backend/user/User";
+import {UserGetProfile, UserLogin} from "../app/backend/user/User";
 import {LogoutOutlined, UserOutlined} from "@ant-design/icons";
 import {useAppDispatch, useAppSelector} from "../store/hooks";
 import {actionModal} from "../store/walletModal";
@@ -78,7 +78,11 @@ ${account}`
       }).then((resp) => {
         setJWTLocalStorage(resp.jwt)
         setJWTExpiredLocalStorage()
-        if (redirect) router.push(`/${redirect}`)
+        UserGetProfile().then((profile) => {
+          saveUserProfile(profile)
+        }).finally(() => {
+          if (redirect) router.push(`/${redirect}`)
+        })
       })
     })
   }, [account, library, router, signatureMsg])
