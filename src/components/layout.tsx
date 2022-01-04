@@ -21,6 +21,10 @@ import {
 } from "../lib/helper";
 import {UserLogin} from "../app/backend/user/User";
 import {LogoutOutlined, UserOutlined} from "@ant-design/icons";
+import {useAppDispatch, useAppSelector} from "../store/hooks";
+import {actionModal} from "../store/walletModal";
+import {RootState} from "../store";
+import {actionSign} from "../store/signAction";
 
 type PageProps = {
   title?: string
@@ -30,13 +34,18 @@ type PageProps = {
 
 const Page: FC<PageProps> = ({title, active: activePage, children}) => {
   const router = useRouter()
-  const {active, activate, deactivate, account, chainId, library, connector} = useWeb3React()
+  const dispatch = useAppDispatch();
+  const isWalletModalVisible = useAppSelector((state: RootState) => state.walletModal.visible)
+  const isSignAction = useAppSelector((state: RootState) => state.signAction.action)
+  const {active, activate, deactivate, account, chainId, library} = useWeb3React()
 
-  const [isWalletModalVisible, setIsWalletModalVisible] = useState<boolean>(false);
+  const setIsWalletModalVisible = useCallback((visible: boolean) => {
+    dispatch(actionModal(visible))
+  }, [dispatch])
 
   const connectMetamask = useCallback(async () => {
     setIsWalletModalVisible(true)
-  }, [])
+  }, [setIsWalletModalVisible])
 
   const disConnect = useCallback(async () => {
     try {
@@ -60,24 +69,35 @@ Wallet address:
 ${account}`
   }, [account])
 
+  const handleSign = useCallback((redirect?: string | undefined) => {
+    library?.getSigner().signMessage(signatureMsg).then((signed: any) => {
+      UserLogin({
+        address: account || "",
+        signature: signed,
+        origin_message: signatureMsg
+      }).then((resp) => {
+        setJWTLocalStorage(resp.jwt)
+        setJWTExpiredLocalStorage()
+        if (redirect) router.push(`/${redirect}`)
+      })
+    })
+  }, [account, library, router, signatureMsg])
+
   const handleProfile = useCallback(async () => {
     if (!active || !account) return
     if (!getJWTExpired() && getJWTLocalStorage()) {
       await router.push("/profile")
       return
     }
-    library?.getSigner().signMessage(signatureMsg).then((signed: any) => {
-      UserLogin({
-        address: account,
-        signature: signed,
-        origin_message: signatureMsg
-      }).then((resp) => {
-        setJWTLocalStorage(resp.jwt)
-        setJWTExpiredLocalStorage()
-        router.push("/profile")
-      })
-    })
-  }, [account, active, library, router, signatureMsg])
+    handleSign("profile")
+  }, [account, active, handleSign, router])
+
+  useEffect(() => {
+    if (isSignAction) {
+      handleSign()
+      dispatch(actionSign(false))
+    }
+  }, [dispatch, handleSign, isSignAction])
 
   const connect = useCallback(async (name: ConnectorNames) => {
     try {
@@ -165,7 +185,7 @@ ${account}`
         </Card.Grid>
       </Card>
     </Modal>
-  }, [connect, isWalletModalVisible])
+  }, [connect, isWalletModalVisible, setIsWalletModalVisible])
 
   const headerTitle = useMemo(() => {
     return `${process.env.SEO_TITLE}${title ? ` - ${title}` : ''}`

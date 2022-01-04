@@ -29,10 +29,20 @@ const Social = () => {
   const [telegramVerifyCode, setTelegramVerifyCode] = useState<string>("");
 
   const [twitterAccount, setTwitterAccount] = useState<string>("")
+  const [verifyTwitterLoading, setVerifyTwitterLoading] = useState<boolean>(false)
+  const [telegramBotURL, setTelegramBotURL] = useState<string>("")
 
   const [disconnectLoading, setDisconnectLoading] = useState<Record<number, boolean>>({
     0: false, 1: false, 2: false
   })
+
+  useEffect(() => {
+    if (location.host.includes("peopleland.space")) {
+      setTelegramBotURL("https://t.me/peopleland_bot")
+    } else {
+      setTelegramBotURL("https://t.me/peopleland_test_bot")
+    }
+  }, [])
 
   useEffect(() => {
     if (getJWTExpired() || !getJWTLocalStorage()) {
@@ -137,7 +147,7 @@ const Social = () => {
       </div>
       <div>
         <Card className={styles.socialCard}>
-          <div className={styles.socialTitle}>Telegram</div>
+          <div className={styles.telegramTitle}>Telegram</div>
           <div className={styles.socialIcon}><Image src={TelegramLogo} alt={"telegram"} width={45} height={45} /></div>
           <div className={styles.socialDesc}>Get verified by connecting your Telegram account.</div>
           <div className={styles.socialFooter}>
@@ -189,8 +199,9 @@ const Social = () => {
     return <Modal title="Verify with Twitter"
                   visible={twitterStep2ModalVisible}
                   okText={"Verify Tweet"}
-                  okButtonProps={{disabled: twitterAccount === ""}}
+                  okButtonProps={{disabled: twitterAccount === "", loading: verifyTwitterLoading}}
                   onOk={async () => {
+                    setVerifyTwitterLoading(true)
                     UserConnectTwitter({twitter: twitterAccount}).then(() => {
                       message.success("Connect Twitter Account Success!")
                       refresh()
@@ -199,6 +210,7 @@ const Social = () => {
                     }).finally(() => {
                       setTwitterStep2ModalVisible(false)
                       setTwitterAccount("")
+                      setVerifyTwitterLoading(false)
                     })
                   }} onCancel={() => setTwitterStep2ModalVisible(false)}>
       <p>Now we’ll validate that you’ve the tweet. Enter your Twitter handle and press &quot;Verify Tweet&quot;</p>
@@ -206,25 +218,25 @@ const Social = () => {
         <Input prefix="@" value={twitterAccount} onChange={(e) => setTwitterAccount(e.target.value)}/>
       </p>
     </Modal>
-  }, [refresh, twitterAccount, twitterStep2ModalVisible])
+  }, [refresh, twitterAccount, twitterStep2ModalVisible, verifyTwitterLoading])
 
   const telegramConnectModal = useMemo(() => {
     return <Modal title="Verify with Telegram"
                   visible={telegramModalVisible}
                   okText={"Open Telegram"}
                   onOk={() => {
-                    open("https://t.me/peopleland_bot", "_blank")
+                    open(telegramBotURL, "_blank")
                   }}
                   onCancel={() => {
                     setTelegramModalVisible(false)
                     setTelegramVerifyCode("")
                   }}>
-      <p>Send the Telegram bot <a href="https://t.me/peopleland_bot" target="_blank" rel="noreferrer">@peopleland_bot</a> with a copy of the following binding code</p>
+      <p>Send the Telegram bot <a href={telegramBotURL} target="_blank" rel="noreferrer">@peopleland_bot</a> with a copy of the following binding code</p>
       <p className={styles.telegramVerifyCode}>
         {telegramVerifyCode}
       </p>
     </Modal>
-  }, [telegramModalVisible, telegramVerifyCode])
+  }, [telegramBotURL, telegramModalVisible, telegramVerifyCode])
 
   return <Layout title="Social Account" >
     {twitterModal}

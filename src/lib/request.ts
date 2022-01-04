@@ -1,6 +1,7 @@
 import type { RequestOptionsInit } from 'umi-request';
 import {clearJWTExpiredLocalStorage, clearJWTLocalStorage, getJWTExpired, getJWTLocalStorage} from "./helper";
 import { extend } from 'umi-request';
+import {message} from "antd";
 
 const authHeaderInterceptor = (url: string, options: RequestOptionsInit) => {
   const auth = getJWTLocalStorage();
@@ -29,6 +30,9 @@ request.interceptors.response.use(
         clearJWTExpiredLocalStorage()
         clearJWTLocalStorage()
         location.href = "/"
+      }
+      if (error === "request.nft.error.none") {
+        message.error("Sorry, you're not a landowner yet. Go to the Opensea to buy a plot of land and become an owner now!")
       }
       return response
     }

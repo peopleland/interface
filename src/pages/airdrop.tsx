@@ -21,11 +21,14 @@ import {
   useUniswapV3DaibuilderPoolLazyQuery,
 } from "../app/uniswap-v3/generated";
 import {getWalletConnectorLocalStorage} from "../lib/helper";
+import {actionModal} from "../store/walletModal";
+import {useAppDispatch} from "../store/hooks";
 
 const uniswapSwapURL = "https://app.uniswap.org/#/swap?inputCurrency=0x6b175474e89094c44da98b954eedeac495271d0f&outputCurrency=0x6fbc77cbfc59d201dc03e004203734e0fae10d3e"
 
 const Airdrop = () => {
   const { library, account, chainId, active, activate } = useWeb3React();
+  const dispatch = useAppDispatch();
   const [currentMoment, setCurrentMoment] = useState(moment());
   const [buttonLoading, setButtonLoading] = useState<boolean>(false);
   const [isClaimed, setIsClaimed] = useState<boolean>(false);
@@ -166,7 +169,7 @@ const Airdrop = () => {
     if (!active || chainId !== AvailableNetwork) {
       return <Button block={true} size={'large'} disabled={false} loading={buttonLoading} onClick={async () => {
         try {
-          await activate(Injected)
+          dispatch(actionModal(true))
         } catch (e) {
           console.log(e)
         }
@@ -182,7 +185,7 @@ const Airdrop = () => {
     return <Button block={true} size={'large'} disabled={claimDisabled} loading={buttonLoading} onClick={handlerClaim}>
       <span style={{color: "#fff"}}>One-Click Claim</span>
     </Button>
-  }, [activate, active, buttonLoading, chainId, claimDisabled, handlerClaim, isClaimed])
+  }, [active, buttonLoading, chainId, claimDisabled, dispatch, handlerClaim, isClaimed])
 
   const claimTitle = useMemo(() => {
     if (!active || chainId !== AvailableNetwork) return ["Claim your tokens", "Please make sure to connect your wallet using Metamask and switch to the Ethereum Mainnet."]

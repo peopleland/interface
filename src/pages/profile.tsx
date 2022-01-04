@@ -6,8 +6,18 @@ import {useRequest} from "ahooks";
 import {UserGetProfile, UserPutProfile} from "../app/backend/user/User";
 import {useCallback, useEffect, useMemo} from "react";
 import {saveUserProfile} from "../lib/helper";
+import {useWeb3React} from "@web3-react/core";
+import {useRouter} from "next/router";
 
 const Profile = () => {
+  const router = useRouter()
+  const {active} = useWeb3React()
+  useEffect(() => {
+    if (!active) {
+      message.info("Please Connect Wallet")
+      router.push("/")
+    }
+  }, [active, router])
   const {data, error, loading, refresh} = useRequest(UserGetProfile)
   const [form] = Form.useForm();
   useEffect(() => {
@@ -24,8 +34,6 @@ const Profile = () => {
     await refresh()
     message.success("Profile saved successfully!")
   }, [refresh])
-
-  console.log(data?.name || "x")
 
   return useMemo(() => {
     return <Layout title="Profile" >

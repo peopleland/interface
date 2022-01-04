@@ -19,6 +19,10 @@
   font-size: 1.5rem;
 }
 
+.telegramTitle {
+  font-size: 1.5rem;
+}
+
 .socialTitle:after {
   display: inline-block;
   margin-left: 4px;
