@@ -1,13 +1,23 @@
 import Image from "next/image"
-import styles from "../styles/Opener.module.css"
-import Header from "../../public/assets/images/opener_header.png"
-import Layout from "../components/layout";
-import {useEffect, useMemo, useState} from "react";
+import styles from "../../styles/Opener.module.css"
+import Header from "../../../public/assets/images/opener_header.png"
+import Layout from "../../components/layout";
+import {useCallback, useEffect, useMemo, useState} from "react";
 import moment from "moment";
-import {BeginOpenerGameDatetime} from "../lib/utils";
+import {BeginOpenerGameDatetime} from "../../lib/utils";
+import {UserGetProfile} from "../../app/backend/user/User";
+import {useWeb3React} from "@web3-react/core";
+import {useAppDispatch} from "../../store/hooks";
+import {actionModal} from "../../store/walletModal";
+import {getJWTExpired, getJWTLocalStorage, saveUserProfile} from "../../lib/helper";
+import {useRouter} from "next/router";
+import {actionSign} from "../../store/signAction";
 
 const Opener = () => {
   const [currentMoment, setCurrentMoment] = useState(moment());
+  const { active } = useWeb3React();
+  const dispatch = useAppDispatch();
+  const router = useRouter();
   useEffect(() => {
     setInterval(() => {
       setCurrentMoment(moment())
@@ -45,7 +55,22 @@ const Opener = () => {
     </>
   }, [diffDatetime])
 
-  return <Layout title="Opener" active={"opener"}>
+  const handlerGoInvitation = useCallback(() => {
+    if (!active) {
+      dispatch(actionModal(true))
+      return
+    }
+    if (getJWTExpired() || !getJWTLocalStorage()) {
+      dispatch(actionSign(true))
+      return
+    }
+    UserGetProfile().then((data) => {
+      saveUserProfile(data)
+      router.push("/opener/invitation")
+    })
+  }, [active, dispatch, router])
+
+  return <Layout title="Opener">
     <div className={styles.opener}>
       <div className={styles.headerImg}><Image src={Header} height={548} width={492} alt={"Opener"}  /></div>
       <div className={styles.rewardTitle}>50,000 $BUILDER + ??? $ETH</div>
@@ -71,6 +96,9 @@ const Opener = () => {
       </div>
       <div>
         <a className={styles.detailLink} href="https://peopleland.notion.site/Opener-game-rules-97f84ecf2e9e44428299a6ea1286921e" target={"_blank"} rel="noreferrer">For details, please see {">>>"} </a>
+      </div>
+      <div>
+        <a className={styles.detailLink} onClick={handlerGoInvitation}>Get invitation link {">>>"}</a>
       </div>
       <div>
         {countDown}
