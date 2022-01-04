@@ -27,7 +27,7 @@ import {useAppDispatch} from "../store/hooks";
 const uniswapSwapURL = "https://app.uniswap.org/#/swap?inputCurrency=0x6b175474e89094c44da98b954eedeac495271d0f&outputCurrency=0x6fbc77cbfc59d201dc03e004203734e0fae10d3e"
 
 const Airdrop = () => {
-  const { library, account, chainId, active, activate } = useWeb3React();
+  const { library, account, chainId, active } = useWeb3React();
   const dispatch = useAppDispatch();
   const [currentMoment, setCurrentMoment] = useState(moment());
   const [buttonLoading, setButtonLoading] = useState<boolean>(false);
@@ -169,7 +169,7 @@ const Airdrop = () => {
     if (!active || chainId !== AvailableNetwork) {
       return <Button block={true} size={'large'} disabled={false} loading={buttonLoading} onClick={async () => {
         try {
-          dispatch(actionModal(true))
+          dispatch(actionModal({visible: true}))
         } catch (e) {
           console.log(e)
         }

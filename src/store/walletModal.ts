@@ -2,6 +2,8 @@ import {createSlice} from "@reduxjs/toolkit";
 
 export interface WalletModalState  {
   readonly visible: boolean
+  thenSign?: boolean
+  callback?: string
 }
 
 const initialState: WalletModalState = {
@@ -13,7 +15,10 @@ export const walletModal = createSlice({
   initialState,
   reducers: {
     actionModal(state, action) {
-      state.visible = action.payload
+      const {visible, thenSign, callback} = action.payload
+      state.visible = visible
+      state.thenSign = thenSign
+      state.callback = callback
     }
   }
 })

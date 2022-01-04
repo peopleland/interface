@@ -6,9 +6,17 @@ import Layout from "../../components/layout";
 import {CheckOutlined, CopyOutlined, LoadingOutlined} from "@ant-design/icons";
 import styles from "../../styles/Opener.module.css";
 import {CopyToClipboard} from 'react-copy-to-clipboard';
+import {actionModal} from "../../store/walletModal";
+import {getJWTExpired, getJWTLocalStorage} from "../../lib/helper";
+import {actionSign} from "../../store/signAction";
+import {useRouter} from "next/router";
+import {useWeb3React} from "@web3-react/core";
+import {useAppDispatch} from "../../store/hooks";
 
 const Invitation = () => {
-  // const router = useRouter()
+  const router = useRouter()
+  const { active } = useWeb3React();
+  const dispatch = useAppDispatch();
   // useEffect(() => {
   //   const profile = getLocalUserProfile()
   //   if (!(profile.discord?.id && profile.twitter)) {
@@ -16,12 +24,24 @@ const Invitation = () => {
   //     router.push("/social")
   //   }
   // }, [router])
+  const {data, loading, refresh, run} = useRequest(async () => {
+    return await UserGenVerifyCode({} as any)
+  }, {manual: true})
+
+  useEffect(() => {
+    if (!active) {
+      dispatch(actionModal({visible: true, thenSign: true, callback: "/opener/invitation"}))
+      return
+    }
+    if (getJWTExpired() || !getJWTLocalStorage()) {
+      dispatch(actionSign({action: true, callback: "/opener/invitation"}))
+      return
+    }
+    run()
+  }, [active, dispatch, router, run])
 
   const [link, setLink] = useState<string>()
   const [copyed, setCopyed] = useState<boolean>(false)
-  const {data, loading, refresh} = useRequest(async () => {
-    return await UserGenVerifyCode({} as any)
-  })
 
   useEffect(() => {
     if (data) {
@@ -31,7 +51,6 @@ const Invitation = () => {
 
   const handlerGetLink = useCallback(async (values) => {
     await refresh()
-    message.success("Get Link Successfully!")
   }, [refresh])
 
   const handlerCopyLink = useCallback(() => {

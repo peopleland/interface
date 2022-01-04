@@ -1,6 +1,6 @@
 import styles from "../styles/Layout.module.css";
 import {EthereumNetwork} from "../lib/utils";
-import {FC, ReactNode, useCallback, useEffect, useMemo, useState} from "react";
+import {FC, ReactNode, useCallback, useEffect, useMemo} from "react";
 import {useWeb3React} from "@web3-react/core"
 import {ConnectorNames, ConnectorsByName, Injected} from "../hooks/useWallet";
 import Link from 'next/link'
@@ -36,11 +36,14 @@ const Page: FC<PageProps> = ({title, active: activePage, children}) => {
   const router = useRouter()
   const dispatch = useAppDispatch();
   const isWalletModalVisible = useAppSelector((state: RootState) => state.walletModal.visible)
+  const isWalletModalCallback = useAppSelector((state: RootState) => state.walletModal.callback)
+  const isWalletModalThenSign = useAppSelector((state: RootState) => state.walletModal.thenSign)
+  const isSignCallback = useAppSelector((state: RootState) => state.signAction.callback)
   const isSignAction = useAppSelector((state: RootState) => state.signAction.action)
   const {active, activate, deactivate, account, chainId, library, connector} = useWeb3React()
 
-  const setIsWalletModalVisible = useCallback((visible: boolean) => {
-    dispatch(actionModal(visible))
+  const setIsWalletModalVisible = useCallback((visible: boolean, callback?: string, thenSign?: boolean) => {
+    dispatch(actionModal({visible, callback, thenSign}))
   }, [dispatch])
 
   const connectMetamask = useCallback(async () => {
@@ -69,7 +72,7 @@ Wallet address:
 ${account}`
   }, [account])
 
-  const handleSign = useCallback((redirect?: string | undefined) => {
+  const handleSign = useCallback((redirect?: string | undefined, callback?: () => void) => {
     library?.getSigner().signMessage(signatureMsg).then((signed: any) => {
       UserLogin({
         address: account || "",
@@ -81,7 +84,8 @@ ${account}`
         UserGetProfile().then((profile) => {
           saveUserProfile(profile)
         }).finally(() => {
-          if (redirect) router.push(`/${redirect}`)
+          if (redirect) router.push(`${redirect}`)
+          if (callback) callback()
         })
       })
     })
@@ -95,8 +99,12 @@ ${account}`
 
   useEffect(() => {
     if (!connector) return
-    connector.on("accountsChanged", () => {
-      handleClear()
+    console.log(connector)
+    connector.getProvider().then((provider) => {
+      provider.on("accountsChanged", () => {
+        handleClear()
+        location.reload()
+      })
     })
   }, [connector, handleClear])
 
@@ -106,25 +114,32 @@ ${account}`
       await router.push("/profile")
       return
     }
-    handleSign("profile")
+    handleSign("/profile")
   }, [account, active, handleSign, router])
 
   useEffect(() => {
     if (isSignAction) {
-      handleSign()
-      dispatch(actionSign(false))
+      handleSign(isSignCallback, () => {dispatch(actionSign({action: false}))})
     }
-  }, [dispatch, handleSign, isSignAction])
+  }, [dispatch, handleSign, isSignAction, isSignCallback])
 
   const connect = useCallback(async (name: ConnectorNames) => {
     try {
       await activate(ConnectorsByName[name])
-      setIsWalletModalVisible(false)
+      setIsWalletModalVisible(false, isWalletModalCallback, isWalletModalThenSign)
       setWalletConnectorLocalStorage(name)
+
+      if (isWalletModalThenSign) {
+        handleSign(isWalletModalCallback, () => {setIsWalletModalVisible(isWalletModalVisible)})
+      } else if (isWalletModalCallback) {
+        router.push(isWalletModalCallback)
+        setIsWalletModalVisible(isWalletModalVisible)
+        return
+      }
     } catch (ex) {
       console.log(ex)
     }
-  }, [activate])
+  }, [activate, handleSign, isWalletModalCallback, isWalletModalThenSign, isWalletModalVisible, router, setIsWalletModalVisible])
 
   useEffect(() => {
     if (!active && getWalletConnectorLocalStorage() === ConnectorNames.MetaMask) {

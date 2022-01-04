@@ -2,6 +2,7 @@ import {createSlice} from "@reduxjs/toolkit";
 
 export interface SignActionState  {
   readonly action: boolean
+  callback?: string
 }
 
 const initialState: SignActionState = {
@@ -12,8 +13,10 @@ export const signAction = createSlice({
   name: 'signAction',
   initialState,
   reducers: {
-    actionSign(state, action) {
-      state.action = action.payload
+    actionSign(state, actions) {
+      const {action, callback} = actions.payload
+      state.action = action
+      state.callback = callback
     }
   }
 })
