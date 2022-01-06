@@ -36,7 +36,7 @@ const Invite = () => {
         setInviteY("")
         setInviteAddress("")
         setInviteSlogan("")
-        tx.wait().then().catch().finally(() => {
+        tx.wait().then().catch(() => {}).finally(() => {
           message.success("Invitation successfully!")
           setLoadingInvite(false)
         })

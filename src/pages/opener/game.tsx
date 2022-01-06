@@ -125,15 +125,15 @@ const Game = () => {
   const [remainingTime, remainingProgress] = useMemo(() => {
     if (!data?.opener_record || !data?.info) return ["24:00:00", 0]
     if (data?.info?.has_winner) return ["00:00:00", 100]
-    if (!data?.info?.start_timestamp) return ["24:00:00", 0]
-    const mayBeEndTime = data.info.start_timestamp + 24 * 60 * 60
+    if (!data?.opener_record?.block_timestamp) return ["24:00:00", 0]
+    const mayBeEndTime = (data.opener_record.block_timestamp + 24 * 60 * 60) * 1000
     if (moment(mayBeEndTime).isSameOrBefore(currentMoment)) {
       return ["00:00:00", 100]
     }
     const mayBeEndDuration = moment.duration(moment(mayBeEndTime).diff(currentMoment))
     return [
       `${mayBeEndDuration.hours()}:${mayBeEndDuration.minutes()}:${mayBeEndDuration.seconds()}`,
-      parseInt((mayBeEndDuration.asHours()/24).toString(10), 10)
+      parseInt((mayBeEndDuration.asSeconds()/(24 * 60 * 60)).toString(10), 10)
     ]
   }, [currentMoment, data?.info, data?.opener_record])
 
@@ -180,9 +180,9 @@ const Game = () => {
     }
     return openerAllList.map((opener, index) => {
       const [on, inn] = parseName(opener)
-      const nextTime = opener.next_token_block_timestamp || currentMoment.unix() / 1000
+      const nextTime = opener.next_token_block_timestamp || currentMoment.unix()
       const beginTime = opener.block_timestamp || 0
-      const guardDuration = moment.duration(nextTime - beginTime)
+      const guardDuration = moment.duration((nextTime - beginTime) * 1000)
       return <Row justify={"space-between"} className={styles.gameInfoListLine} key={index}>
         <Col style={{width: "120px"}}>
           {!opener.next_token_block_timestamp ? <Space>
@@ -275,7 +275,7 @@ const Game = () => {
       <Modal
         key={'tutorialModal'}
         visible={tutorialModal}
-        title={<div style={{textAlign: "center", fontStyle: "1.5rem", fontWeight: "700"}}>How to play the door opener</div>}
+        title={<div style={{textAlign: "center", fontSize: "1.5rem", fontWeight: "700"}}>How to play the door opener</div>}
         footer={<div><Button type={"primary"} onClick={() => setTutorialModal(false)}>OK</Button></div>}
         onCancel={() => setTutorialModal(false)}
       >
@@ -293,21 +293,22 @@ const Game = () => {
       <Modal
         key={'openedBoxModal'}
         visible={openedBoxModal}
-        title={<div style={{textAlign: "center", fontStyle: "1.5rem", fontWeight: "700"}}>The treasure box was opened!</div>}
+        width={"620px"}
+        title={<div style={{textAlign: "center", fontSize: "1.5rem", fontWeight: "700"}}>The treasure box was opened!</div>}
         footer={<div><Button type={"primary"} onClick={() => setOpenedBoxModal(false)}>Got it</Button></div>}
         onCancel={() => setOpenedBoxModal(false)}
       >
         <p>
           Congratulations to {openerName} and {inviterName}, who successfully opened the treasure box. <br/> <br/>
-          {openerName} will get {openerBuilderAmount}BUILDER+{openerETHAmount}ETH reward！<br/>
-          {inviterName} will get {invitedBuilderAmount}BUILDER+{invitedETHAmount}ETH reward！<br/><br/>
+          {openerName} will get <span style={{fontSize: "1.5rem", fontWeight: "700"}}>{openerBuilderAmount}BUILDER+{openerETHAmount}ETH</span> reward！<br/>
+          {inviterName} will get <span style={{fontSize: "1.5rem", fontWeight: "700"}}>{invitedBuilderAmount}BUILDER+{invitedETHAmount}ETH</span> reward！<br/><br/>
           All rewards will be issued within 24 hours！<br/>
         </p>
       </Modal>
       <Modal
         key={'mintedAlertModal'}
         visible={mintedAlertModal}
-        title={<div style={{textAlign: "center", fontStyle: "1.5rem", fontWeight: "700"}}>Update Alert</div>}
+        title={<div style={{textAlign: "center", fontSize: "1.5rem", fontWeight: "700"}}>Update Alert</div>}
         footer={<div><Button type={"primary"} onClick={() => setMintedAlertModal(false)}>OK</Button></div>}
         onCancel={() => setMintedAlertModal(false)}
       >
