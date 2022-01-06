@@ -14,7 +14,7 @@ function getLibrary(provider: any) {
 
 function App({ Component, pageProps }: AppProps) {
   message.config({
-    top: 100,
+    top: 80,
     maxCount: 1,
   });
   return <Provider store={store}>

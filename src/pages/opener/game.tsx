@@ -70,7 +70,7 @@ const Game = () => {
   }, [])
 
   const {run, data, loading} = useRequest(UserGetOpenerGameRoundInfo, {
-    manual: true, pollingInterval: 3000, pollingWhenHidden: true, throttleWait: 3000, debounceWait: 3000,
+    pollingInterval: 3000, pollingWhenHidden: true, debounceWait: 3000,
   })
   const {data: openerListData, loading: openerListLoading, run: getOpenerList} = useRequest(UserOpenerGameOpenerRecordList, {
     defaultParams: [{pageSize: 10}]
@@ -79,8 +79,7 @@ const Game = () => {
   useEffect(() => {
     getBuilderUniswapData()
     getCurrentETHPrice()
-    run()
-  }, [getBuilderUniswapData, getCurrentETHPrice, run])
+  }, [getBuilderUniswapData, getCurrentETHPrice])
 
   const builderFluctuation = useMemo(() => {
     if (!builderUniswapData?.data?.pool?.token0Price) return 0
@@ -236,13 +235,14 @@ const Game = () => {
       contract.mintToSelf(mintX, mintY, whiteAddress[account.toLowerCase()]).then((tx) => {
         setMintX("")
         setMintY("")
+        setMintedAlertModal(true)
         setMintLoading(false)
-        tx.wait().then().catch().finally(() => setMintedAlertModal(true))
+        tx.wait().then().catch().finally(() => {})
       }).catch((e) => {
         console.log(e)
         parseWalletError(e)
         setMintLoading(false)
-      })
+      }).finally(() => setMintLoading(true))
     })
   }, [account, active, contract, dispatch, invitedCode, mintX, mintY, whiteAddress])
 
