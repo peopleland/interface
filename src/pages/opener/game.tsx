@@ -120,7 +120,7 @@ const Game = () => {
   }, [builderAmount, ethAmount])
 
   useEffect(() => {
-    if (data?.info?.has_winner) setMintedAlertModal(true)
+    if (data?.info?.has_winner) setOpenedBoxModal(true)
   }, [data?.info?.has_winner])
 
   const [remainingTime, remainingProgress] = useMemo(() => {
@@ -159,7 +159,6 @@ const Game = () => {
   }, [builderAmount, builderFluctuation, ethAmount, ethFluctuation])
 
   const handleGoInvite = useCallback(() => {
-    setGoLinkLoading(true)
     if (!active) {
       dispatch(actionModal({visible: true, thenSign: true, callback: "/opener/invitation"}))
       return
@@ -394,7 +393,7 @@ const Game = () => {
         </Row>
       </Spin>
     </Layout>
-  }, [actionButtons, builderAmount, builderUniswapData.loading, currentETHPrice.loading, data?.info?.round_number, ethAmount, handleLoadMoreOpener, inviteRewardPrice, invitedBuilderAmount, invitedCode, invitedETHAmount, inviterName, loading, mintedAlertModal, openedBoxModal, openerBuilderAmount, openerETHAmount, openerList, openerListData?.total_count, openerListLoading, openerName, openerRewardPrice, remainingProgress, remainingTime, rewardPrice, tutorialModal])
+  }, [actionButtons, builderAmount, builderUniswapData.loading, currentETHPrice.loading, data?.info?.round_number, ethAmount, handleLoadMoreOpener, inviteRewardPrice, invitedBuilderAmount, invitedCode, invitedETHAmount, inviterName, loading, mintedAlertModal, openedBoxModal, openerAllList.length, openerBuilderAmount, openerETHAmount, openerList, openerListData?.total_count, openerListLoading, openerName, openerRewardPrice, remainingProgress, remainingTime, rewardPrice, tutorialModal])
 }
 
 export default Game;
