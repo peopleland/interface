@@ -37,10 +37,12 @@ header > div > div > a {
 main {
   color: #FFFFFF;
   padding-top: 60px;
+  min-height: calc(100vh - 4.2rem - 40px);
 }
 
 footer {
   color: #FFFFFF;
+  height: 103px;
 }
 
 .ant-input {
@@ -70,6 +72,15 @@ footer {
 .ant-btn-primary:hover {
   background-color: #625FF6;
   color: #FFFFFF;
+}
+
+.ant-btn-primary:focus, .ant-btn-primary:hover {
+  background-color: #625FF6;
+  border-color: #625FF6;
+}
+
+.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #625FF6 !important;
 }
 
 @font-face {

@@ -69,10 +69,11 @@
 
 .page {
   background-color: rgba(47, 49, 61, 0.929);
+  min-height: 100vh;
 }
 
 .openerPage {
-
+  min-height: 100vh;
 }
 
 .walletModalCard {

@@ -18,7 +18,7 @@ export const AvailableNetwork = process.env.NEXT_PUBLIC_RUN_ENV === "DEV" ? 3 : 
 export const ADDRESS_ZERO = "0x0000000000000000000000000000000000000000";
 
 const ProdMintContractAddress = "0xD1d30B80C5EFB9145782634fe0F9cbeD5D24ef3b"
-const TestMintContractAddress = "0xac6faA8065c6aC2FbF42ac21553F64c00181BD40"
+const TestMintContractAddress = "0x4C30Ad85F1770bb0a1f9e6df841AA3E3Fea600ab"
 export const MintContractAddress = IsDEV ? TestMintContractAddress : ProdMintContractAddress
 
 export const BeginMintDatetime = moment.unix(1637933358)
@@ -32,4 +32,4 @@ const ProdAirdropContractAddress = "0x98080C43486FfA945f7FA4A7d40B699Ff404798B"
 const TestAirdropContractAddress = "0x98080C43486FfA945f7FA4A7d40B699Ff404798B"
 export const AirdropContractAddress = IsDEV ? TestAirdropContractAddress : ProdAirdropContractAddress
 
-export const BeginOpenerGameDatetime = IsDEV ? moment.unix(1641816000) : moment.unix(1641816000)
+export const BeginOpenerGameDatetime = IsDEV ? moment.unix(0) : moment.unix(1641816000)

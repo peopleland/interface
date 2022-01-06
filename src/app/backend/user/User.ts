@@ -89,6 +89,57 @@ export async function UserLogin(body: API.v1LoginPayLoad, options?: { [key: stri
   );
 }
 
+/** 此处后端没有提供注释 POST /user/v1/opener_game/mint_record */
+export async function UserOpenerGameMintRecord(
+  body: API.v1OpenerGameMintRecordPayLoad,
+  options?: { [key: string]: any },
+) {
+  return request<API.v1OpenerGameMintRecordResponse>(
+    `${
+      process.env.NEXT_PUBLIC_BACKEND_URL + '/.netlify/functions'
+    }/user/v1/opener_game/mint_record`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: body,
+      ...(options || {}),
+    },
+  );
+}
+
+/** 此处后端没有提供注释 GET /user/v1/opener_game/opener_records */
+export async function UserOpenerGameOpenerRecordList(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.UserOpenerGameOpenerRecordListParams,
+  options?: { [key: string]: any },
+) {
+  return request<API.v1OpenerGameOpenerRecordListResponse>(
+    `${
+      process.env.NEXT_PUBLIC_BACKEND_URL + '/.netlify/functions'
+    }/user/v1/opener_game/opener_records`,
+    {
+      method: 'GET',
+      params: {
+        ...params,
+      },
+      ...(options || {}),
+    },
+  );
+}
+
+/** 此处后端没有提供注释 GET /user/v1/opener_game/round_info */
+export async function UserGetOpenerGameRoundInfo(options?: { [key: string]: any }) {
+  return request<API.v1GetOpenerGameRoundInfoResponse>(
+    `${process.env.NEXT_PUBLIC_BACKEND_URL + '/.netlify/functions'}/user/v1/opener_game/round_info`,
+    {
+      method: 'GET',
+      ...(options || {}),
+    },
+  );
+}
+
 /** 此处后端没有提供注释 GET /user/v1/profile */
 export async function UserGetProfile(options?: { [key: string]: any }) {
   return request<API.v1UserProfile>(

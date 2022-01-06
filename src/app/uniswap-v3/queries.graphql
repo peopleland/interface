@@ -42,3 +42,25 @@ query UniswapV3BUILDER24HourOpen($startTime: Int!) {
     close
   }
 }
+
+query UniswapV3ETH {
+  token(id: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2") {
+    derivedETH
+    feesUSD
+    id
+    name
+    symbol
+    totalValueLocked
+    totalValueLockedUSD
+    txCount
+    volume
+    volumeUSD
+  }
+}
+
+query UniswapCurrentPrice {
+  bundles(first: 1, subgraphError: allow) {
+    ethPriceUSD
+  }
+}
+
