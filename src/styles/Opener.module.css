@@ -120,3 +120,159 @@
   margin-top: 36px;
 }
 
+.gameTitle {
+  margin-top: 5.8125rem;
+  font-weight: 700;
+  font-size: 3rem;
+}
+
+.gameBox {
+  width: 78px;
+  height: 78px;
+  background: url("../../public/assets/images/opener/box.png");
+  background-size: 78px 78px;
+  filter: drop-shadow(0px 0px 7px #EFB336);
+}
+
+.gameRewardD {
+  font-weight: bold;
+  font-size: 2.25rem;
+  text-shadow: 0 0 7px #EFB336;
+}
+
+.gameCountDown {
+  margin-top: 30px;
+  font-size: 1.5rem;
+  text-shadow: 0 0 8px #E9357C;
+  height: 3rem;
+}
+
+.gameDesc {
+  background: #625FF6;
+  border-radius: 4px;
+}
+
+.gameKey {
+  width: 34px;
+  height: 34px;
+  background: url("../../public/assets/images/opener/key.png");
+  background-size: 34px 34px;
+}
+
+.gameDescText {
+  line-height: 3rem;
+  font-size: 1.125rem;
+}
+
+.gameTutorialButton {
+  width: 11.5rem;
+}
+
+.gameStage {
+  width: 100%;
+  background: #222529;
+  border-radius: 4px;
+  text-align: left;
+  margin-top: 1.5rem;
+}
+
+.gameStageContent {
+  padding: 2.5rem 5.25rem 2.8125rem;
+}
+
+.gameStageRound {
+  font-size: 14px;
+}
+
+.gameStageDesc {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.gameStageCountDown {
+  font-size: 1.5rem;
+  text-shadow: 0 0 8px #E9357C;
+}
+
+.gameProgress {
+  width: 100%;
+}
+
+.gameStageInfo {
+  background: #191C1D;
+  border-radius: 4px;
+  margin-top: 6px;
+}
+
+.gameStageInfoLine {
+  padding: 13px 15px;
+}
+
+.gameStageInfoLeft {
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+.gameStageInfoRight {
+  text-align: right;
+}
+
+.gameStageInfoName {
+  font-size: 1.5rem;
+}
+
+.gameStageInfoReward {
+  font-size: 2.25rem;
+  font-weight: 700;
+  text-shadow: 0 0 7px #EFB336;
+}
+
+.gameStageInfoBox {
+  width: 44px;
+  height: 44px;
+  background: url("../../public/assets/images/opener/box.png");
+  background-size: 44px 44px;
+  filter: drop-shadow(0px 0px 7px #EFB336);
+}
+
+.gameMintDesc {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.gameInfoList {
+  background: #222529;
+  margin-top: 3.75rem;
+  margin-bottom: 4.75rem;
+}
+
+.gameInfoListContent {
+  padding: 40px 80px;
+}
+
+.gameInfoListLine {
+  padding: 27px 33px;
+  background: #191C1D;
+  border-radius: 4px;
+  margin-top: 8px;
+}
+
+.gameInfoListKey {
+  width: 34px;
+  height: 34px;
+  background: url("../../public/assets/images/opener/key-fill.png");
+  background-size: 34px 34px;
+}
+
+.gameInfoListText {
+  font-weight: 400;
+  font-size: 1.125rem;
+}
+
+.gameInfoListLoad {
+  text-align: center;
+  margin-top: 30px;
+  width: 187px;
+  margin-left: auto;
+  margin-right: auto;
+}

@@ -1,0 +1,21 @@
+.invite {
+  margin-top: 7px;
+}
+
+.inviteContent {
+  margin-top: 250px;
+}
+
+.inviteInput {
+  background: #222529;
+}
+
+.inviteButton {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.inviteDesc {
+  margin-top: 40px;
+  text-align: center;
+}

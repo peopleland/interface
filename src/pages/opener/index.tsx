@@ -25,6 +25,16 @@ const Opener = () => {
     }, 1000)
   }, [])
 
+  useEffect(() => {
+    if (BeginOpenerGameDatetime.isSameOrBefore(currentMoment)) {
+      if (router.query.invite_code) {
+        router.push("/opener/game?invite_code="+router.query.invite_code)
+      } else {
+        router.push("/opener/game")
+      }
+    }
+  }, [currentMoment, router])
+
   const diffDatetime = useMemo(() => {
     if (BeginOpenerGameDatetime.isSameOrBefore(currentMoment)) {
       return moment.duration(0)
