@@ -21,10 +21,13 @@ import {MintContractAddress} from "../../lib/utils";
 import {MintContract} from "../../app/contract/mintContract";
 import testWhiteAddress from "../../../public/assets/json/test_address_sign_info.json";
 import prodWhiteAddress from "../../../public/assets/json/prod_address_sign_info.json";
+import numeral from "numeral";
 
 const parseName = (opener_record: API.v1OpenerRecord) => {
   let on, inn
-  if (opener_record?.mint_user_name) on = opener_record.mint_user_name
+  if (opener_record?.mint_user_name) on = <Tooltip title={opener_record.mint_address}>
+    <span>{opener_record.mint_user_name}</span>
+  </Tooltip>
   else if (opener_record?.mint_address) on = <Tooltip title={opener_record.mint_address}>
       <span>
         {opener_record.mint_address.substr(0, 6)}...{opener_record.mint_address.substr(-4)}
@@ -32,7 +35,9 @@ const parseName = (opener_record: API.v1OpenerRecord) => {
   </Tooltip>
   else on = "?"
 
-  if (opener_record?.invited_user_name) inn = opener_record.invited_user_name
+  if (opener_record?.invited_user_name) inn = <Tooltip title={opener_record.invited_address}>
+    <span>{opener_record.invited_user_name}</span>
+  </Tooltip>
   else if (opener_record?.invited_address) inn = <Tooltip title={opener_record.invited_address}>
       <span>
         {opener_record.invited_address.substr(0, 6)}...{opener_record.invited_address.substr(-4)}
@@ -129,7 +134,7 @@ const Game: FC<LayoutProps> = ({setPageMeta, connectWalletThen, handleSign}) => 
     }
     const mayBeEndDuration = moment.duration(moment(mayBeEndTime).diff(currentMoment))
     return [
-      `${mayBeEndDuration.hours()}:${mayBeEndDuration.minutes()}:${mayBeEndDuration.seconds()}`,
+      `${numeral(mayBeEndDuration.hours()).format("00")}:${numeral(mayBeEndDuration.minutes()).format("00")}:${numeral(mayBeEndDuration.seconds()).format("00")}`,
       parseInt((100 - 100 * mayBeEndDuration.asSeconds()/(24 * 60 * 60)).toString(10), 10)
     ]
   }, [currentMoment, data?.info, data?.opener_record])
@@ -182,6 +187,18 @@ const Game: FC<LayoutProps> = ({setPageMeta, connectWalletThen, handleSign}) => 
       const nextTime = opener.next_token_block_timestamp || currentMoment.unix()
       const beginTime = opener.block_timestamp || 0
       const guardDuration = moment.duration((nextTime - beginTime) * 1000)
+      if (guardDuration.asHours() >= 24) {
+        return <Row justify={"space-between"} className={styles.gameInfoListLine} key={index}>
+          <Col style={{width: "120px"}}>
+            <Space>
+              <div className={styles.gameInfoListKey} />
+              <div className={styles.gameInfoListText}>{on}</div>
+            </Space>
+          </Col>
+          <Col style={{width: "130px"}} className={styles.gameInfoListText}>Guard 24:00:00</Col>
+          <Col style={{width: "200px"}} className={styles.gameInfoListText}>Invited by {inn}</Col>
+        </Row>
+      }
       return <Row justify={"space-between"} className={styles.gameInfoListLine} key={index}>
         <Col style={{width: "120px"}}>
           {!opener.next_token_block_timestamp ? <Space>
@@ -189,8 +206,8 @@ const Game: FC<LayoutProps> = ({setPageMeta, connectWalletThen, handleSign}) => 
             <div className={styles.gameInfoListText}>{on}</div>
           </Space> : <div className={styles.gameInfoListText}>{on}</div>}
         </Col>
-        <Col style={{width: "220px"}} className={styles.gameInfoListText}>Guard {`${guardDuration.hours()}:${guardDuration.minutes()}:${guardDuration.seconds()}`}</Col>
-        <Col style={{width: "220px"}} className={styles.gameInfoListText}>Invited by {inn}</Col>
+        <Col style={{width: "130px"}} className={styles.gameInfoListText}>Guard {`${numeral(guardDuration.hours()).format("00")}:${numeral(guardDuration.minutes()).format("00")}:${numeral(guardDuration.seconds()).format("00")}`}</Col>
+        <Col style={{width: "200px"}} className={styles.gameInfoListText}>Invited by {inn}</Col>
       </Row>
     })
   }, [currentMoment, openerAllList])
@@ -273,6 +290,10 @@ const Game: FC<LayoutProps> = ({setPageMeta, connectWalletThen, handleSign}) => 
     </>
   }, [active, gameHadEnd, goLinkLoading, handleGoInvite, handleMint, invitedCode, mintLoading, mintX, mintY])
 
+  const parseAmount = useCallback((builder, eth) => {
+    return `${numeral(builder).format('0,0')}BUILDER+${eth}ETH`
+  }, [])
+
   return useMemo(() => {
     return <>
       <Modal
@@ -285,8 +306,8 @@ const Game: FC<LayoutProps> = ({setPageMeta, connectWalletThen, handleSign}) => 
         <p className={styles.tutorialH1}>Who can get reward?</p>
         <p className={styles.tutorialP}>
           If you keep playing as an Opener for more than 24 hours, you will open the treasure chest and get the reward <br/>
-          Opener get 60% ({openerBuilderAmount}BUILDER+{openerETHAmount}ETH) <br/>
-          Opener&apos;s inviter get 40% ({invitedBuilderAmount}BUILDER+{invitedETHAmount}ETH)</p>
+          Opener get 60% ({parseAmount(openerBuilderAmount, openerETHAmount)}) <br/>
+          Opener&apos;s inviter get 40% ({parseAmount(invitedBuilderAmount, invitedETHAmount)})</p>
         <p className={styles.tutorialH1}>How can I be an opener?</p>
         <p className={styles.tutorialP}>The last one to Mint PEOPLELAND</p>
         <p className={styles.tutorialH1}>How can I be an inviter?</p>
@@ -303,9 +324,9 @@ const Game: FC<LayoutProps> = ({setPageMeta, connectWalletThen, handleSign}) => 
         onCancel={() => setOpenedBoxModal(false)}
       >
         <p>
-          Congratulations to {openerName} and {inviterName}, who successfully opened the treasure box. <br/> <br/>
-          {openerName} will get <span style={{fontSize: "1.5rem", fontWeight: "700"}}>{openerBuilderAmount}BUILDER+{openerETHAmount}ETH</span> reward！<br/>
-          {inviterName} will get <span style={{fontSize: "1.5rem", fontWeight: "700"}}>{invitedBuilderAmount}BUILDER+{invitedETHAmount}ETH</span> reward！<br/><br/>
+          Congratulations to&nbsp;<span style={{color: "#E9357C"}}>{openerName}</span>&nbsp;and&nbsp;<span style={{color: "#E9357C"}}>{inviterName}</span>, who successfully opened the treasure box. <br/> <br/>
+          {openerName} will get <span style={{fontSize: "1.5rem", fontWeight: "700"}}>{parseAmount(openerBuilderAmount, openerETHAmount)}</span> reward！<br/>
+          {inviterName} will get <span style={{fontSize: "1.5rem", fontWeight: "700"}}>{parseAmount(invitedBuilderAmount, invitedETHAmount)}</span> reward！<br/><br/>
           All rewards will be issued within 24 hours！<br/>
         </p>
       </Modal>
@@ -375,7 +396,7 @@ const Game: FC<LayoutProps> = ({setPageMeta, connectWalletThen, handleSign}) => 
                         <div className={styles.gameStageInfoReward}>${rewardPrice}</div>
                         <div className={styles.gameStageInfoBox}/>
                       </Space>
-                      <div>{builderAmount}BUILDER+{ethAmount}ETH</div>
+                      <div>{parseAmount(builderAmount, ethAmount)}</div>
                     </Col>
                   </Row>
                 </div>
@@ -400,7 +421,7 @@ const Game: FC<LayoutProps> = ({setPageMeta, connectWalletThen, handleSign}) => 
         </Row>
       </Spin>
     </>
-  }, [actionButtons, builderAmount, builderUniswapData.loading, currentETHPrice.loading, data?.info?.has_winner, data?.info?.round_number, ethAmount, handleLoadMoreOpener, inviteRewardPrice, invitedBuilderAmount, invitedCode, invitedETHAmount, inviterName, loading, mintedAlertModal, openedBoxModal, openerAllList.length, openerBuilderAmount, openerETHAmount, openerList, openerListData?.total_count, openerListLoading, openerName, openerRewardPrice, remainingProgress, remainingTime, rewardPrice, tutorialModal])
+  }, [actionButtons, builderAmount, builderUniswapData.loading, currentETHPrice.loading, data?.info?.has_winner, data?.info?.round_number, ethAmount, handleLoadMoreOpener, inviteRewardPrice, invitedBuilderAmount, invitedCode, invitedETHAmount, inviterName, loading, mintedAlertModal, openedBoxModal, openerAllList.length, openerBuilderAmount, openerETHAmount, openerList, openerListData?.total_count, openerListLoading, openerName, openerRewardPrice, parseAmount, remainingProgress, remainingTime, rewardPrice, tutorialModal])
 }
 
 export default Game;
