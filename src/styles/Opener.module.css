@@ -276,3 +276,19 @@
   margin-left: auto;
   margin-right: auto;
 }
+
+.tutorialH1 {
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.tutorialP {
+  font-weight: 300;
+  line-height: 33px;
+}
+
+.tutorialLink {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 300;
+}
