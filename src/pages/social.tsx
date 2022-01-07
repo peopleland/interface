@@ -19,7 +19,7 @@ import {getJWTExpired, getJWTLocalStorage, getLocalUserProfile} from "../lib/hel
 import {useRouter} from "next/router";
 import {useWeb3React} from "@web3-react/core";
 
-const Social: FC<LayoutProps> = ({setTitle, connectWalletThen, handleSign}) => {
+const Social: FC<LayoutProps> = ({setPageMeta, connectWalletThen, handleSign}) => {
   const router = useRouter()
   const {active} = useWeb3React()
   const [twitterModalVisible, setTwitterModalVisible] = useState<boolean>(false);
@@ -39,13 +39,13 @@ const Social: FC<LayoutProps> = ({setTitle, connectWalletThen, handleSign}) => {
   })
 
   useEffect(() => {
-    setTitle("Social Account")
+    setPageMeta({title: "Social Account"})
     if (process.env.NEXT_PUBLIC_RUN_ENV !== "PROD") {
       setTelegramBotURL("https://t.me/peopleland_bot")
     } else {
       setTelegramBotURL("https://t.me/peopleland_test_bot")
     }
-  }, [setTitle])
+  }, [setPageMeta])
 
   useEffect(() => {
     if (!active) {
