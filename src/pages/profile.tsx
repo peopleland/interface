@@ -9,14 +9,14 @@ import {getJWTExpired, getJWTLocalStorage, saveUserProfile} from "../lib/helper"
 import {useWeb3React} from "@web3-react/core";
 import {useRouter} from "next/router";
 
-const Profile: FC<LayoutProps>  = ({setTitle, connectWalletThen, handleSign}) => {
+const Profile: FC<LayoutProps>  = ({setPageMeta, connectWalletThen, handleSign}) => {
   const router = useRouter()
   const {active} = useWeb3React()
 
   const {data, error, loading, refresh, run} = useRequest(UserGetProfile, {manual: true})
 
   useEffect(() => {
-    setTitle("Profile")
+    setPageMeta({title: "Profile"})
     if (!active) {
       connectWalletThen(() => {
         handleSign()
@@ -28,7 +28,7 @@ const Profile: FC<LayoutProps>  = ({setTitle, connectWalletThen, handleSign}) =>
       return
     }
     run()
-  }, [active, connectWalletThen, handleSign, router, run, setTitle])
+  }, [active, connectWalletThen, handleSign, router, run, setPageMeta])
 
   const [form] = Form.useForm();
   useEffect(() => {
