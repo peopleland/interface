@@ -1,5 +1,5 @@
-import {useCallback, useEffect, useMemo, useState} from "react";
-import Layout from "../../components/layout";
+import {FC, useCallback, useEffect, useMemo, useState} from "react";
+import {LayoutProps} from "../../components/layout";
 import {Button, Col, Empty, Input, message, Modal, Progress, Row, Space, Spin, Tabs, Tooltip} from "antd";
 import {LoadingOutlined} from "@ant-design/icons";
 import styles from "../../styles/Opener.module.css";
@@ -14,11 +14,8 @@ import {
   UserOpenerGameOpenerRecordList
 } from "../../app/backend/user/User";
 import moment from "moment";
-import {actionModal} from "../../store/walletModal";
 import {getJWTExpired, getJWTLocalStorage, parseWalletError} from "../../lib/helper";
-import {actionSign} from "../../store/signAction";
 import {useWeb3React} from "@web3-react/core";
-import {useAppDispatch} from "../../store/hooks";
 import {useRouter} from "next/router";
 import {MintContractAddress} from "../../lib/utils";
 import {MintContract} from "../../app/contract/mintContract";
@@ -47,7 +44,7 @@ const parseName = (opener_record: API.v1OpenerRecord) => {
   return [on, inn]
 }
 
-const Game = () => {
+const Game: FC<LayoutProps> = ({setPageMeta, connectWalletThen, handleSign}) => {
   const [currentMoment, setCurrentMoment] = useState(moment());
   const [tutorialModal, setTutorialModal] = useState<boolean>(false)
   const [openedBoxModal, setOpenedBoxModal] = useState<boolean>(false)
@@ -55,7 +52,6 @@ const Game = () => {
   const [goLinkLoading, setGoLinkLoading] = useState<boolean>(false);
   const [openerAllList, setOpenerAllList] = useState<API.v1OpenerRecord[]>([]);
   const { active, chainId, library, account } = useWeb3React();
-  const dispatch = useAppDispatch();
   const router = useRouter()
   const invitedCode = useMemo(() => {
     return router.query.invite_code as (string | undefined)
@@ -64,10 +60,11 @@ const Game = () => {
   const [getBuilderUniswapData, builderUniswapData] = useUniswapV3DaibuilderPoolLazyQuery({fetchPolicy: 'no-cache'})
 
   useEffect(() => {
+    setPageMeta({title: "Opener Game"})
     setInterval(() => {
       setCurrentMoment(moment())
     }, 1000)
-  }, [])
+  }, [setPageMeta])
 
   const {run, data, loading} = useRequest(UserGetOpenerGameRoundInfo, {
     pollingInterval: 3000, pollingWhenHidden: true, debounceWait: 3000,
@@ -112,8 +109,8 @@ const Game = () => {
       oea = "???"
       iea = "???"
     } else {
-      oea = (parseInt(ethAmount, 10) * 0.6).toFixed(2)
-      iea = (parseInt(ethAmount, 10) * 0.4).toFixed(2)
+      oea = (parseFloat(ethAmount) * 0.6).toFixed(2)
+      iea = (parseFloat(ethAmount) * 0.4).toFixed(2)
     }
     return [oba, iba, oea, iea]
   }, [builderAmount, ethAmount])
@@ -133,7 +130,7 @@ const Game = () => {
     const mayBeEndDuration = moment.duration(moment(mayBeEndTime).diff(currentMoment))
     return [
       `${mayBeEndDuration.hours()}:${mayBeEndDuration.minutes()}:${mayBeEndDuration.seconds()}`,
-      parseInt((mayBeEndDuration.asSeconds()/(24 * 60 * 60)).toString(10), 10)
+      parseInt((100 - 100 * mayBeEndDuration.asSeconds()/(24 * 60 * 60)).toString(10), 10)
     ]
   }, [currentMoment, data?.info, data?.opener_record])
 
@@ -159,15 +156,17 @@ const Game = () => {
 
   const handleGoInvite = useCallback(() => {
     if (!active) {
-      dispatch(actionModal({visible: true, thenSign: true, callback: "/opener/invitation"}))
+      connectWalletThen(() => {
+        handleSign("/opener/invitation")
+      })
       return
     }
     if (getJWTExpired() || !getJWTLocalStorage()) {
-      dispatch(actionSign({action: true, callback: "/opener/invitation"}))
+      handleSign("/opener/invitation")
       return
     }
     router.push("/opener/invitation")
-  }, [active, dispatch, router])
+  }, [active, connectWalletThen, handleSign, router])
 
   useEffect(() => {
     if (!openerListData?.opener_records || openerListData.opener_records.length === 0) return
@@ -218,7 +217,7 @@ const Game = () => {
 
   const handleMint = useCallback(() => {
     if (!active || !contract || !account) {
-      dispatch(actionModal({visible: true}))
+      connectWalletThen()
       return
     }
     if (!whiteAddress[account.toLowerCase()]) {
@@ -244,7 +243,11 @@ const Game = () => {
         setMintLoading(false)
       }).finally(() => setMintLoading(true))
     })
-  }, [account, active, contract, dispatch, invitedCode, mintX, mintY, whiteAddress])
+  }, [account, active, connectWalletThen, contract, invitedCode, mintX, mintY, whiteAddress])
+
+  const gameHadEnd = useMemo(() => {
+    return data?.info?.has_winner || false
+  }, [data?.info?.has_winner])
 
   const actionButtons = useMemo(() => {
     if (invitedCode) return <>
@@ -254,7 +257,7 @@ const Game = () => {
       </Row>
       <Row justify={"center"} style={{marginTop: 24}}>
         <Col span={8}>
-          <Button type={"primary"} size={"large"} block loading={mintLoading} onClick={handleMint}>{active ? 'Free Mint' : 'Connect Wallet'}</Button>
+          <Button disabled={gameHadEnd} type={"primary"} size={"large"} block loading={mintLoading} onClick={handleMint}>{active ? 'Free Mint' : 'Connect Wallet'}</Button>
         </Col>
       </Row>
       <div className={styles.gameMintDesc}>
@@ -264,14 +267,14 @@ const Game = () => {
     </>
     return <>
       <Row justify={"center"} gutter={16} style={{marginTop: 24}}>
-        <Col span={8}><Button type={"primary"} size={"large"} block onClick={handleGoInvite} loading={goLinkLoading}>Go Invite</Button></Col>
-        <Col span={8}><Button type={"primary"} size={"large"} block onClick={() => open("/mint/invite", "_blank")}>0.66 ETH Invite</Button></Col>
+        <Col span={8}><Button disabled={gameHadEnd} type={"primary"} size={"large"} block onClick={handleGoInvite} loading={goLinkLoading}>Go Invite</Button></Col>
+        <Col span={8}><Button disabled={gameHadEnd} type={"primary"} size={"large"} block onClick={() => open("/mint/invite", "_blank")}>0.66 ETH Invite</Button></Col>
       </Row>
     </>
-  }, [active, goLinkLoading, handleGoInvite, handleMint, invitedCode, mintLoading, mintX, mintY])
+  }, [active, gameHadEnd, goLinkLoading, handleGoInvite, handleMint, invitedCode, mintLoading, mintX, mintY])
 
   return useMemo(() => {
-    return <Layout title="Opener Game" >
+    return <>
       <Modal
         key={'tutorialModal'}
         visible={tutorialModal}
@@ -279,16 +282,17 @@ const Game = () => {
         footer={<div><Button type={"primary"} onClick={() => setTutorialModal(false)}>OK</Button></div>}
         onCancel={() => setTutorialModal(false)}
       >
-        <p>
-          Buy a key by choosing the amount of keys you want, choosing the team and then clicking on the SEND BNB button. <br/><br/>
-          Congratulations, you are now holding the key to the pot! You will win the pot as long as nobody else buys another key. <br/><br/>
-          Want to spread your joy and earn 10% affiliate fees? <br/>
-          Just register a name for 0.01 BNB in the Vanity & Referrals tab. <br/>
-          Once your name is registered, a Vanity Referral link will be made for you. For example fomo3d.net/inventor. <br/><br/>
-
-          Whenever someone purchases keys through your link, 10% of their purchase will go directly to you! <br/>
-          Btw, if you have a name registered and you are the most recent key buyer, then your name will show up at the top! For example, satoshi is EXIT SCAMMING.
-        </p>
+        <p className={styles.tutorialH1}>Who can get reward?</p>
+        <p className={styles.tutorialP}>
+          If you keep playing as an Opener for more than 24 hours, you will open the treasure chest and get the reward <br/>
+          Opener get 60% ({openerBuilderAmount}BUILDER+{openerETHAmount}ETH) <br/>
+          Opener&apos;s inviter get 40% ({invitedBuilderAmount}BUILDER+{invitedETHAmount}ETH)</p>
+        <p className={styles.tutorialH1}>How can I be an opener?</p>
+        <p className={styles.tutorialP}>The last one to Mint PEOPLELAND</p>
+        <p className={styles.tutorialH1}>How can I be an inviter?</p>
+        <p className={styles.tutorialP}><span style={{fontWeight: 700}}>First way:</span>&nbsp;The owner of PEOPLELAND NFT gets the invitation link here, then sends the invitation link to a donor of ConstitutionDAO who has not yet minted, and he/she becomes an inviter once the other person has successfully minted <br/>
+        <span style={{fontWeight: 700}}>Second way:</span>&nbsp;The owner of PEOPLELAND NFT Invite anyone for 0.66 ETH</p>
+        <div className={styles.tutorialLink}><a href="https://peopleland.notion.site/Opener-game-rules-97f84ecf2e9e44428299a6ea1286921e" target={"_blank"} rel="noreferrer">For details, please see {">>>"} </a></div>
       </Modal>
       <Modal
         key={'openedBoxModal'}
@@ -328,7 +332,9 @@ const Game = () => {
             <div className={styles.gameDesc}>
               <Space>
                 <div className={styles.gameKey} />
-                <div className={styles.gameDescText}>The only way to open the treasure chest is to be the last opener to stand by for 24 hours.</div>
+                <div className={styles.gameDescText}>
+                  {data?.info?.has_winner ? 'The treasure box was opened and game over!' : 'The only way to open the treasure chest is to be the last opener to stand by for 24 hours.'}
+                </div>
               </Space>
             </div>
             <Row justify={"start"} style={{marginTop: '1.875rem'}} gutter={17}>
@@ -338,7 +344,7 @@ const Game = () => {
             <div className={styles.gameStage}>
               <div className={styles.gameStageContent}>
                 <div className={styles.gameStageRound}>Round #{data?.info?.round_number || 1}</div>
-                <div className={styles.gameStageDesc}>Contract will train in</div>
+                <div className={styles.gameStageDesc}>Awards will be allocated to</div>
                 <div className={styles.gameStageCountDown}>{remainingTime}</div>
                 <div className={styles.gameProgress}><Progress percent={remainingProgress} strokeColor={"#625FF6"} trailColor={"#F5F5F5"}/></div>
                 <div className={styles.gameStageInfo}>
@@ -393,8 +399,8 @@ const Game = () => {
           </Col>
         </Row>
       </Spin>
-    </Layout>
-  }, [actionButtons, builderAmount, builderUniswapData.loading, currentETHPrice.loading, data?.info?.round_number, ethAmount, handleLoadMoreOpener, inviteRewardPrice, invitedBuilderAmount, invitedCode, invitedETHAmount, inviterName, loading, mintedAlertModal, openedBoxModal, openerAllList.length, openerBuilderAmount, openerETHAmount, openerList, openerListData?.total_count, openerListLoading, openerName, openerRewardPrice, remainingProgress, remainingTime, rewardPrice, tutorialModal])
+    </>
+  }, [actionButtons, builderAmount, builderUniswapData.loading, currentETHPrice.loading, data?.info?.has_winner, data?.info?.round_number, ethAmount, handleLoadMoreOpener, inviteRewardPrice, invitedBuilderAmount, invitedCode, invitedETHAmount, inviterName, loading, mintedAlertModal, openedBoxModal, openerAllList.length, openerBuilderAmount, openerETHAmount, openerList, openerListData?.total_count, openerListLoading, openerName, openerRewardPrice, remainingProgress, remainingTime, rewardPrice, tutorialModal])
 }
 
 export default Game;

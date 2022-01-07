@@ -1,23 +1,24 @@
-import {useCallback, useMemo, useState} from "react";
-import Layout from "../../components/layout";
-import {Button, Col, Input, message, Modal, Row, Space, Spin, Tooltip} from "antd";
+import {FC, useCallback, useEffect, useMemo, useState} from "react";
+import {LayoutProps} from "../../components/layout";
+import {Button, Col, Input, message, Modal, Row, Space} from "antd";
 import styles from "../../styles/Mint.module.css";
 import {MintContractAddress} from "../../lib/utils";
 import {MintContract} from "../../app/contract/mintContract";
 import {useWeb3React} from "@web3-react/core";
-import {actionModal} from "../../store/walletModal";
-import {useAppDispatch} from "../../store/hooks";
 import {parseWalletError} from "../../lib/helper";
 
-const Invite = () => {
+const Invite: FC<LayoutProps> = ({setPageMeta, connectWalletThen}) => {
   const { library, chainId, active } = useWeb3React();
-  const dispatch = useAppDispatch();
   const [tutorialModal, setTutorialModal] = useState<boolean>(false)
   const [inviteX, setInviteX] = useState("");
   const [inviteY, setInviteY] = useState("");
   const [inviteAddress, setInviteAddress] = useState("");
   const [inviteSlogan, setInviteSlogan] = useState("");
   const [loadingInvite, setLoadingInvite] = useState<boolean>(false);
+
+  useEffect(() => {
+    setPageMeta({title: "Mint Invited", activePage: undefined})
+  }, [setPageMeta])
 
   const contract = useMemo(() => {
     if (!chainId || !library) return null
@@ -26,7 +27,7 @@ const Invite = () => {
 
   const handleInvite = useCallback(() => {
     if (!contract || !active) {
-      dispatch(actionModal({visible: true}))
+      connectWalletThen()
       return
     }
     setLoadingInvite(true)
@@ -58,10 +59,10 @@ const Invite = () => {
       parseWalletError(e)
       setLoadingInvite(false)
     })
-  }, [contract, active, inviteSlogan, inviteX, inviteY, inviteAddress, dispatch])
+  }, [contract, active, inviteSlogan, inviteX, inviteY, inviteAddress, connectWalletThen])
 
   return useMemo(() => {
-    return <Layout title="Mint Invited" >
+    return <>
       <Modal
         key={'tutorialModal'}
         visible={tutorialModal}
@@ -107,7 +108,7 @@ const Invite = () => {
           </div>
         </Col>
       </Row>
-    </Layout>
+    </>
   }, [active, handleInvite, inviteAddress, inviteSlogan, inviteX, inviteY, loadingInvite, tutorialModal])
 }
 

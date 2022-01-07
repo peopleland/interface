@@ -1,5 +1,5 @@
 import styles from "../styles/Airdrop.module.css"
-import Layout from "../components/layout";
+import {LayoutProps} from "../components/layout";
 import moment from "moment";
 import {
   AirdropContractAddress,
@@ -21,14 +21,12 @@ import {
   useUniswapV3DaibuilderPoolLazyQuery,
 } from "../app/uniswap-v3/generated";
 import {getWalletConnectorLocalStorage} from "../lib/helper";
-import {actionModal} from "../store/walletModal";
-import {useAppDispatch} from "../store/hooks";
+import {NextPage} from "next";
 
 const uniswapSwapURL = "https://app.uniswap.org/#/swap?inputCurrency=0x6b175474e89094c44da98b954eedeac495271d0f&outputCurrency=0x6fbc77cbfc59d201dc03e004203734e0fae10d3e"
 
-const Airdrop = () => {
+const Airdrop: NextPage<LayoutProps> = ({connectWalletThen, setPageMeta}) => {
   const { library, account, chainId, active } = useWeb3React();
-  const dispatch = useAppDispatch();
   const [currentMoment, setCurrentMoment] = useState(moment());
   const [buttonLoading, setButtonLoading] = useState<boolean>(false);
   const [isClaimed, setIsClaimed] = useState<boolean>(false);
@@ -72,8 +70,9 @@ const Airdrop = () => {
   }, [getBuilder24HourData, getBuilderUniswapData])
 
   useEffect(() => {
+    setPageMeta({title: "Airdrop"})
     handlerTimeoutRequest()
-  }, [handlerTimeoutRequest])
+  }, [handlerTimeoutRequest, setPageMeta])
 
   useEffect(() => {
     setInterval(() => {
@@ -169,7 +168,7 @@ const Airdrop = () => {
     if (!active || chainId !== AvailableNetwork) {
       return <Button block={true} size={'large'} disabled={false} loading={buttonLoading} onClick={async () => {
         try {
-          dispatch(actionModal({visible: true}))
+          connectWalletThen()
         } catch (e) {
           console.log(e)
         }
@@ -185,7 +184,7 @@ const Airdrop = () => {
     return <Button block={true} size={'large'} disabled={claimDisabled} loading={buttonLoading} onClick={handlerClaim}>
       <span style={{color: "#fff"}}>One-Click Claim</span>
     </Button>
-  }, [active, buttonLoading, chainId, claimDisabled, dispatch, handlerClaim, isClaimed])
+  }, [active, buttonLoading, chainId, claimDisabled, connectWalletThen, handlerClaim, isClaimed])
 
   const claimTitle = useMemo(() => {
     if (!active || chainId !== AvailableNetwork) return ["Claim your tokens", "Please make sure to connect your wallet using Metamask and switch to the Ethereum Mainnet."]
@@ -265,7 +264,7 @@ const Airdrop = () => {
     return countDown
   }, [airdropShow, countDown, currentMoment])
 
-  return useMemo(() => <Layout title={"Airdrop"}>
+  return useMemo(() => <>
     {active && chainId !== AvailableNetwork && switchNetworkTips}
     <div className={styles.airdrop}>
       {main}
@@ -274,7 +273,7 @@ const Airdrop = () => {
         For rules on airdrops, please learn through <a href="https://github.com/peopleland/discussion/discussions/16" target="_blank" rel="noreferrer" style={{color: "#625FF6"}}>proposal</a> or view the <a rel="noreferrer" href={`https://etherscan.io/address/${AirdropContractAddress}`} target="_blank" style={{color: "#625FF6"}}>contract</a>.
       </p>
     </div>
-  </Layout>, [active, chainId, main, switchNetworkTips])
+  </>, [active, chainId, main, switchNetworkTips])
 }
 
 export default Airdrop;

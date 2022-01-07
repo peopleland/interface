@@ -1,35 +1,34 @@
-import Layout from "../components/layout";
+import {LayoutProps} from "../components/layout";
 import styles from "../styles/Profile.module.css"
 import {Button, Col, Form, Input, message, Row, Spin} from "antd";
 import {LoadingOutlined} from "@ant-design/icons";
 import {useRequest} from "ahooks";
 import {UserGetProfile, UserPutProfile} from "../app/backend/user/User";
-import {useCallback, useEffect, useMemo} from "react";
+import {FC, useCallback, useEffect, useMemo} from "react";
 import {getJWTExpired, getJWTLocalStorage, saveUserProfile} from "../lib/helper";
 import {useWeb3React} from "@web3-react/core";
 import {useRouter} from "next/router";
-import {actionModal} from "../store/walletModal";
-import {actionSign} from "../store/signAction";
-import {useAppDispatch} from "../store/hooks";
 
-const Profile = () => {
+const Profile: FC<LayoutProps>  = ({setPageMeta, connectWalletThen, handleSign}) => {
   const router = useRouter()
   const {active} = useWeb3React()
-  const dispatch = useAppDispatch();
 
   const {data, error, loading, refresh, run} = useRequest(UserGetProfile, {manual: true})
 
   useEffect(() => {
+    setPageMeta({title: "Profile"})
     if (!active) {
-      dispatch(actionModal({visible: true, thenSign: true, callback: "/profile"}))
+      connectWalletThen(() => {
+        handleSign()
+      })
       return
     }
     if (getJWTExpired() || !getJWTLocalStorage()) {
-      dispatch(actionSign({action: true, callback: "/profile"}))
+      handleSign()
       return
     }
     run()
-  }, [active, dispatch, router, run])
+  }, [active, connectWalletThen, handleSign, router, run, setPageMeta])
 
   const [form] = Form.useForm();
   useEffect(() => {
@@ -48,7 +47,7 @@ const Profile = () => {
   }, [refresh])
 
   return useMemo(() => {
-    return <Layout title="Profile" >
+    return <>
       <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} spinning={!!error || loading}>
         <Row justify={"center"}>
           <Col span={12}>
@@ -70,7 +69,7 @@ const Profile = () => {
           </Col>
         </Row>
       </Spin>
-    </Layout>
+    </>
   }, [error, form, loading, submitForm])
 }
 

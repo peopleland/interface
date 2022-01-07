@@ -1,6 +1,6 @@
 import styles from "../styles/Layout.module.css";
 import {EthereumNetwork} from "../lib/utils";
-import {FC, ReactNode, useCallback, useEffect, useMemo} from "react";
+import {FC, useCallback, useEffect, useMemo, useState} from "react";
 import {useWeb3React} from "@web3-react/core"
 import {ConnectorNames, ConnectorsByName, Injected} from "../hooks/useWallet";
 import Link from 'next/link'
@@ -21,32 +21,38 @@ import {
 } from "../lib/helper";
 import {UserGetProfile, UserLogin} from "../app/backend/user/User";
 import {LogoutOutlined, UserOutlined} from "@ant-design/icons";
-import {useAppDispatch, useAppSelector} from "../store/hooks";
-import {actionModal} from "../store/walletModal";
-import {RootState} from "../store";
-import {actionSign} from "../store/signAction";
+import {NextComponentType} from "next";
 
 type PageProps = {
-  title?: string
-  active?: "opener"
-  children: ReactNode
+  Component: NextComponentType
+  pageProps: any
 }
 
-const Page: FC<PageProps> = ({title, active: activePage, children}) => {
+type PageMeta = {
+  title: string
+  activePage?: "opener"
+}
+
+export type LayoutProps = {
+  setPageMeta: (meta: PageMeta) => void
+  connectWalletThen: (callback?: () => void) => void
+  handleSign: (redirect?: string | undefined, callback?: () => void) => void
+}
+
+const Page: FC<PageProps> = ({Component, pageProps}) => {
   const router = useRouter()
-  const dispatch = useAppDispatch();
-  const isWalletModalVisible = useAppSelector((state: RootState) => state.walletModal.visible)
-  const isWalletModalCallback = useAppSelector((state: RootState) => state.walletModal.callback)
-  const isWalletModalThenSign = useAppSelector((state: RootState) => state.walletModal.thenSign)
-  const isSignCallback = useAppSelector((state: RootState) => state.signAction.callback)
-  const isSignAction = useAppSelector((state: RootState) => state.signAction.action)
+
+  const [pageMeta, setPageMeta] = useState<PageMeta>({
+    title: ""
+  })
+
+  const [connectCallback, setConnectCallback] = useState<() => void>();
+
   const {active, activate, deactivate, account, chainId, library, connector} = useWeb3React()
 
-  const setIsWalletModalVisible = useCallback((visible: boolean, callback?: string, thenSign?: boolean) => {
-    dispatch(actionModal({visible, callback, thenSign}))
-  }, [dispatch])
+  const [isWalletModalVisible, setIsWalletModalVisible] = useState<boolean>(false)
 
-  const connectMetamask = useCallback(async () => {
+  const connectMetamask = useCallback(() => {
     setIsWalletModalVisible(true)
   }, [setIsWalletModalVisible])
 
@@ -99,7 +105,6 @@ ${account}`
 
   useEffect(() => {
     if (!connector) return
-    console.log(connector)
     connector.getProvider().then((provider) => {
       provider.on("accountsChanged", () => {
         handleClear()
@@ -117,39 +122,35 @@ ${account}`
     handleSign("/profile")
   }, [account, active, handleSign, router])
 
-  useEffect(() => {
-    if (isSignAction) {
-      handleSign(isSignCallback, () => {dispatch(actionSign({action: false}))})
-    }
-  }, [dispatch, handleSign, isSignAction, isSignCallback])
-
-  const connect = useCallback(async (name: ConnectorNames) => {
+  const connectWallet = useCallback(async (name: ConnectorNames) => {
     try {
       await activate(ConnectorsByName[name])
-      setIsWalletModalVisible(false, isWalletModalCallback, isWalletModalThenSign)
+      setIsWalletModalVisible(false)
       setWalletConnectorLocalStorage(name)
 
-      if (isWalletModalThenSign) {
-        handleSign(isWalletModalCallback, () => {setIsWalletModalVisible(isWalletModalVisible)})
-      } else if (isWalletModalCallback) {
-        router.push(isWalletModalCallback)
-        setIsWalletModalVisible(isWalletModalVisible)
-        return
+      if (connectCallback) {
+        connectCallback()
+        setConnectCallback(undefined)
       }
     } catch (ex) {
       console.log(ex)
     }
-  }, [activate, handleSign, isWalletModalCallback, isWalletModalThenSign, isWalletModalVisible, router, setIsWalletModalVisible])
+  }, [activate, connectCallback])
+
+  const connectWalletThen = useCallback((callback?: () => void) => {
+    setIsWalletModalVisible(true)
+    if (callback) setConnectCallback(callback)
+  }, [])
 
   useEffect(() => {
     if (!active && getWalletConnectorLocalStorage() === ConnectorNames.MetaMask) {
       Injected.isAuthorized().then((isAuth: any) => {
         if (isAuth) {
-          connect(ConnectorNames.MetaMask)
+          connectWallet(ConnectorNames.MetaMask)
         }
       }).catch(() => {})
     }
-  }, [active, connect])
+  }, [active, connectWallet])
 
   const handleLogout = useCallback(async () => {
     handleClear()
@@ -191,47 +192,53 @@ ${account}`
   const walletModal = useMemo(() => {
     return <Modal
       visible={isWalletModalVisible}
-      onOk={() => setIsWalletModalVisible(false)}
-      onCancel={() => setIsWalletModalVisible(false)}
+      onOk={() => {
+        setIsWalletModalVisible(false)
+        setConnectCallback(undefined)
+      }}
+      onCancel={() => {
+        setIsWalletModalVisible(false)
+        setConnectCallback(undefined)
+      }}
       footer={null}
       closable={false}
     >
       <Card>
         <Card.Grid className={styles.walletModalCard}>
-          <div onClick={() => connect(ConnectorNames.MetaMask)}>
+          <div onClick={() => connectWallet(ConnectorNames.MetaMask)}>
             <Image src={MetamaskLogo} alt={"metamask"} width="45" height="45" />
             <div>MetaMask</div>
           </div>
         </Card.Grid>
         <Card.Grid className={styles.walletModalCard}>
-          <div onClick={() => connect(ConnectorNames.WalletConnect)}>
+          <div onClick={() => connectWallet(ConnectorNames.WalletConnect)}>
             <Image src={WalletConnectLogo} alt={"walletconnect"} width="45" height="45" />
             <div>WalletConnect</div>
           </div>
         </Card.Grid>
         <Card.Grid className={styles.walletModalCard}>
-          <div onClick={() => connect(ConnectorNames.WalletLink)}>
+          <div onClick={() => connectWallet(ConnectorNames.WalletLink)}>
             <Image src={Coinbase} alt={"coinbase"} width="45" height="45" />
             <div>Coinbase Wallet</div>
           </div>
         </Card.Grid>
       </Card>
     </Modal>
-  }, [connect, isWalletModalVisible, setIsWalletModalVisible])
+  }, [connectWallet, isWalletModalVisible, setIsWalletModalVisible])
 
   const headerTitle = useMemo(() => {
-    return `${process.env.SEO_TITLE}${title ? ` - ${title}` : ''}`
-  }, [title])
+    return `${process.env.SEO_TITLE}${pageMeta.title ? ` - ${pageMeta.title}` : ''}`
+  }, [pageMeta.title])
 
   const wrapperClass = useMemo(() => {
-    if (activePage === "opener") return styles.openerPageWrapper
+    if (pageMeta.activePage === "opener") return styles.openerPageWrapper
     return styles.pageWrapper
-  }, [activePage])
+  }, [pageMeta.activePage])
 
   const pageClass = useMemo(() => {
-    if (activePage === "opener") return styles.openerPage
+    if (pageMeta.activePage === "opener") return styles.openerPage
     return styles.page
-  }, [activePage])
+  }, [pageMeta.activePage])
 
   return useMemo(() => (
     <>
@@ -266,7 +273,7 @@ ${account}`
           </header>
           {walletModal}
           <main>
-            {children}
+            <Component {...pageProps} setPageMeta={setPageMeta} connectWalletThen={connectWalletThen} handleSign={handleSign}/>
           </main>
           <footer>
             <p className={styles.tips}>
@@ -284,7 +291,7 @@ ${account}`
         </div>
       </div>
     </>
-  ), [children, headerTitle, pageClass, rightHeader, walletModal, wrapperClass])
+  ), [Component, connectWalletThen, handleSign, headerTitle, pageClass, pageProps, rightHeader, setPageMeta, walletModal, wrapperClass])
 }
 
 export default Page

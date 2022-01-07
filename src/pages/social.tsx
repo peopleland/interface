@@ -1,4 +1,4 @@
-import Layout from "../components/layout";
+import Layout, {LayoutProps} from "../components/layout";
 import styles from "../styles/Social.module.css"
 import Image from "next/image"
 import TwitterLogo from "../../public/assets/images/twitter.svg"
@@ -14,17 +14,13 @@ import {
   UserConnectTelegram,
   UserDisconnectSocial
 } from "../app/backend/user/User";
-import {useCallback, useEffect, useMemo, useState} from "react";
+import {FC, useCallback, useEffect, useMemo, useState} from "react";
 import {getJWTExpired, getJWTLocalStorage, getLocalUserProfile} from "../lib/helper";
 import {useRouter} from "next/router";
-import {actionSign} from "../store/signAction";
-import {useAppDispatch} from "../store/hooks";
 import {useWeb3React} from "@web3-react/core";
-import {actionModal} from "../store/walletModal";
 
-const Social = () => {
+const Social: FC<LayoutProps> = ({setTitle, connectWalletThen, handleSign}) => {
   const router = useRouter()
-  const dispatch = useAppDispatch();
   const {active} = useWeb3React()
   const [twitterModalVisible, setTwitterModalVisible] = useState<boolean>(false);
   const [twitterStep2ModalVisible, setTwitterStep2ModalVisible] = useState<boolean>(false);
@@ -43,20 +39,23 @@ const Social = () => {
   })
 
   useEffect(() => {
+    setTitle("Social Account")
     if (process.env.NEXT_PUBLIC_RUN_ENV !== "PROD") {
       setTelegramBotURL("https://t.me/peopleland_bot")
     } else {
       setTelegramBotURL("https://t.me/peopleland_test_bot")
     }
-  }, [])
+  }, [setTitle])
 
   useEffect(() => {
     if (!active) {
-      dispatch(actionModal({visible: true, thenSign: true, callback: "/social"}))
+      connectWalletThen(() => {
+        handleSign()
+      })
       return
     }
     if (getJWTExpired() || !getJWTLocalStorage()) {
-      dispatch(actionSign({action: true, callback: "/social"}))
+      handleSign()
       return
     }
     if (!getLocalUserProfile().name) {
@@ -64,7 +63,7 @@ const Social = () => {
       message.info("First save your username!")
       return
     }
-  }, [active, dispatch, router])
+  }, [active, connectWalletThen, handleSign, router])
 
   useEffect(() => {
     setDiscordVerifyURL(
@@ -253,7 +252,7 @@ const Social = () => {
     </Modal>
   }, [telegramBotURL, telegramModalVisible, telegramVerifyCode])
 
-  return <Layout title="Social Account" >
+  return <>
     {twitterModal}
     {twitterStep2Modal}
     {discordModal}
@@ -273,7 +272,7 @@ const Social = () => {
         </Col>
       </Row>
     </Spin>
-  </Layout>
+  </>
 }
 
 export default Social

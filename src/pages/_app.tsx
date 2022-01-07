@@ -7,6 +7,7 @@ import { ApolloProvider } from '@apollo/client';
 import  ApolloClient from '../lib/apolloClient'
 import {ConfigProvider, message} from 'antd';
 import {store} from "../store";
+import Layout from "../components/layout";
 
 function getLibrary(provider: any) {
   return new ethers.providers.Web3Provider(provider)// this will vary according to whether you use e.g. ethers or web3.js
@@ -21,7 +22,7 @@ function App({ Component, pageProps }: AppProps) {
     <ConfigProvider>
       <ApolloProvider client={ApolloClient}>
         <Web3ReactProvider getLibrary={getLibrary}>
-          <Component {...pageProps} />
+          <Layout Component={Component} pageProps={pageProps} />
         </Web3ReactProvider>
       </ApolloProvider>
     </ConfigProvider>

@@ -8,7 +8,6 @@ import prodWhiteAddress from "../../public/assets/json/prod_address_sign_info.js
 import testWhiteAddress from "../../public/assets/json/test_address_sign_info.json";
 import moment from "moment";
 import {BeginMintDatetime, MintContractAddress} from "../lib/utils";
-import Layout from "../components/layout";
 import Button from "../components/button";
 import {useCallback, useEffect, useMemo, useState} from "react";
 import {useWeb3React} from "@web3-react/core";
@@ -16,8 +15,12 @@ import {NextPage} from "next";
 import Image from 'next/image'
 import {useLandsLazyQuery} from "../app/subgraph-v1/generated";
 import {parseTokenSvg} from "../lib/helper";
+import {LayoutProps} from "../components/layout";
+import {useRequest} from "ahooks";
+import {UserGetOpenerGameRoundInfo} from "../app/backend/user/User";
+import {useRouter} from "next/router";
 
-const Home: NextPage = () => {
+const Home: NextPage<LayoutProps> = ({setPageMeta}) => {
   const { library, account, chainId } = useWeb3React();
 
   const [isGived, setIsGived] = useState<boolean>(false);
@@ -39,6 +42,8 @@ const Home: NextPage = () => {
   const [loadingInvite, setLoadingInvite] = useState<boolean>(false);
   const [loadingCustomSlogan, setLoadingCustomSlogan] = useState<boolean>(false);
 
+  const {data: gameInfo} = useRequest(UserGetOpenerGameRoundInfo)
+
   const handleChangeInput = useCallback((e, setFunc) => {
     const v = e.target.value
     setFunc(v.replace(/[^0-9-]/ig,""))
@@ -49,10 +54,11 @@ const Home: NextPage = () => {
   }, [])
 
   useEffect(() => {
+    setPageMeta({title: ""})
     setInterval(() => {
       setCurrentMoment(moment())
     }, 1000)
-  }, [])
+  }, [setPageMeta])
 
   const contract = useMemo(() => {
     if (!chainId || !library) return null
@@ -105,8 +111,14 @@ const Home: NextPage = () => {
     return <p className={styles.mintRemindTitle}>There is still time before the MINT starts...</p>
   }, [currentMoment])
 
+  const router = useRouter()
+
   const handleMint = useCallback(() => {
     if (!contract || !account) return
+    if (gameInfo?.info?.has_winner) {
+      router.push("/opener")
+      return
+    }
     setLoadingMint(true)
     contract.mintToSelf(mintX, mintY, whiteAddress[account.toLowerCase()]).then((tx) => {
       setMintX("")
@@ -116,10 +128,14 @@ const Home: NextPage = () => {
       console.log(e)
       setLoadingMint(false)
     })
-  }, [contract, mintX, mintY, account, whiteAddress])
+  }, [contract, account, gameInfo?.info?.has_winner, mintX, mintY, whiteAddress, router])
 
   const handleInvite = useCallback(() => {
     if (!contract) return
+    if (gameInfo?.info?.has_winner) {
+      router.push("/opener")
+      return
+    }
     setLoadingInvite(true)
     if (inviteSlogan !== "") {
       contract.mintAndGiveToWithSlogan(inviteX, inviteY, inviteAddress, inviteSlogan).then((tx) => {
@@ -143,7 +159,7 @@ const Home: NextPage = () => {
       console.log(e)
       setLoadingInvite(false)
     })
-  }, [contract, inviteY, inviteX, inviteAddress, inviteSlogan])
+  }, [contract, gameInfo?.info?.has_winner, inviteSlogan, inviteX, inviteY, inviteAddress, router])
 
   const handleCustomSlogan = useCallback(() => {
     if (!contract) return
@@ -328,7 +344,7 @@ const Home: NextPage = () => {
     return <></>
   }, [canCustomSlogan, canInvite, currentMoment, customSlogan, handleCustomSlogan, landCarousel, landsResult.loading, loadingCustomSlogan])
 
-  return useMemo(() => <Layout>
+  return useMemo(() => <>
     <p className={styles.title}>PEOPLELAND</p>
     <p className={styles.scroll}>(📜,📜)</p>
     <p className={styles.desc}>For the PEOPLE of ConstitutionDAO who made history</p>
@@ -376,7 +392,7 @@ const Home: NextPage = () => {
       Available via contract only. Not audited. Mint at your own risk. <br/>
       For any questions about invitations join the discord server, or <a rel="noreferrer" href={`https://etherscan.io/address/${MintContractAddress}`} target="_blank" style={{color: "#625FF6"}}>view the contract</a>
     </p>
-  </Layout>, [currentMoment, inviteDom, mintDom, mintText, sloganDom])
+  </>, [currentMoment, inviteDom, mintDom, mintText, sloganDom])
 }
 
 export default Home
