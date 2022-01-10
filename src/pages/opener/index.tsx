@@ -1,29 +1,36 @@
 import Image from "next/image"
 import styles from "../../styles/Opener.module.css"
 import Header from "../../../public/assets/images/opener_header.png"
-import Layout from "../../components/layout";
-import {useCallback, useEffect, useMemo, useState} from "react";
+import {LayoutProps} from "../../components/layout";
+import {FC, useCallback, useEffect, useMemo, useState} from "react";
 import moment from "moment";
 import {BeginOpenerGameDatetime} from "../../lib/utils";
 import {useWeb3React} from "@web3-react/core";
-import {useAppDispatch} from "../../store/hooks";
-import {actionModal} from "../../store/walletModal";
 import {getJWTExpired, getJWTLocalStorage} from "../../lib/helper";
-import {actionSign} from "../../store/signAction";
 import {useRouter} from "next/router";
 import {LoadingOutlined} from "@ant-design/icons";
 
-const Opener = () => {
+const Opener: FC<LayoutProps> = ({setPageMeta, connectWalletThen, handleSign}) => {
   const [currentMoment, setCurrentMoment] = useState(moment());
   const [goLinkLoading, setGoLinkLoading] = useState<boolean>(false);
   const { active } = useWeb3React();
-  const dispatch = useAppDispatch();
   const router = useRouter();
   useEffect(() => {
+    setPageMeta({title: "Opener", activePage: "opener"})
     setInterval(() => {
       setCurrentMoment(moment())
     }, 1000)
-  }, [])
+  }, [setPageMeta])
+
+  useEffect(() => {
+    if (BeginOpenerGameDatetime.isSameOrBefore(currentMoment)) {
+      if (router.query.invite_code) {
+        router.push("/opener/game?invite_code="+router.query.invite_code)
+      } else {
+        router.push("/opener/game")
+      }
+    }
+  }, [currentMoment, router])
 
   const diffDatetime = useMemo(() => {
     if (BeginOpenerGameDatetime.isSameOrBefore(currentMoment)) {
@@ -59,17 +66,19 @@ const Opener = () => {
   const handlerGoInvitation = useCallback(() => {
     setGoLinkLoading(true)
     if (!active) {
-      dispatch(actionModal({visible: true, thenSign: true, callback: "/opener/invitation"}))
+      connectWalletThen(() => {
+        handleSign("/opener/invitation")
+      })
       return
     }
     if (getJWTExpired() || !getJWTLocalStorage()) {
-      dispatch(actionSign({action: true, callback: "/opener/invitation"}))
+      handleSign("/opener/invitation")
       return
     }
     router.push("/opener/invitation")
-  }, [active, dispatch, router])
+  }, [active, connectWalletThen, handleSign, router])
 
-  return <Layout title="Opener" active={"opener"}>
+  return <>
     <div className={styles.opener}>
       <div className={styles.headerImg}><Image src={Header} height={548} width={492} alt={"Opener"}  /></div>
       <div className={styles.rewardTitle}>50,000 $BUILDER + ??? $ETH</div>
@@ -106,7 +115,7 @@ const Opener = () => {
         {countDown}
       </div>
     </div>
-  </Layout>
+  </>
 }
 
 

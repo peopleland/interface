@@ -48,6 +48,11 @@ declare namespace API {
     verify_code?: string;
   };
 
+  type v1GetOpenerGameRoundInfoResponse = {
+    info?: v1OpenerGameRoundInfo;
+    opener_record?: v1OpenerRecord;
+  };
+
   type v1LoginPayLoad = {
     address?: string;
     signature?: string;
@@ -56,6 +61,50 @@ declare namespace API {
 
   type v1LoginResponse = {
     jwt?: string;
+  };
+
+  type v1OpenerGameMintRecordPayLoad = {
+    mintAddress?: string;
+    x?: string;
+    y?: string;
+    verify_code?: string;
+  };
+
+  type v1OpenerGameMintRecordResponse = {
+    mintAddress?: string;
+    x?: string;
+    y?: string;
+    invited_userid?: string;
+  };
+
+  type v1OpenerGameOpenerRecordListResponse = {
+    total_count?: number;
+    after_token_id?: number;
+    before_token_id?: number;
+    opener_records?: v1OpenerRecord[];
+  };
+
+  type v1OpenerGameRoundInfo = {
+    round_number?: number;
+    builder_token_amount?: string;
+    eth_amount?: string;
+    start_timestamp?: number;
+    end_timestamp?: number;
+    has_winner?: boolean;
+    winner_token_id?: number;
+  };
+
+  type v1OpenerRecord = {
+    mint_address?: string;
+    mint_user_name?: string;
+    token_id?: number;
+    x?: string;
+    y?: string;
+    block_number?: number;
+    block_timestamp?: number;
+    invited_address?: string;
+    invited_user_name?: string;
+    next_token_block_timestamp?: number;
   };
 
   type v1PutProfilePayLoad = {
@@ -94,5 +143,11 @@ declare namespace API {
     twitter?: string;
     telegram?: v1TelegramInfo;
     discord?: v1DiscordInfo;
+  };
+
+  type UserOpenerGameOpenerRecordListParams = {
+    pageSize?: number;
+    afterTokenId?: number;
+    beforeTokenId?: number;
   };
 }
