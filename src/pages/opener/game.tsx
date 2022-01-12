@@ -269,12 +269,12 @@ const Game: FC<LayoutProps> = ({setPageMeta, connectWalletThen, handleSign}) => 
   const actionButtons = useMemo(() => {
     if (invitedCode) return <>
       <Row justify={"center"} gutter={16} style={{marginTop: 24}}>
-        <Col span={8}><Input style={{width: "100%"}} value={mintX} onChange={(e) => setMintX(e.target.value)} prefix={<span>📜&nbsp;&nbsp;&nbsp;X:</span>} /></Col>
-        <Col span={8}><Input style={{width: "100%"}} value={mintY} onChange={(e) => setMintY(e.target.value)} prefix={<span>📜&nbsp;&nbsp;&nbsp;Y:</span>} /></Col>
+        <Col span={"184"}><Input style={{width: "100%"}} value={mintX} onChange={(e) => setMintX(e.target.value)} prefix={<span>📜&nbsp;&nbsp;&nbsp;X:</span>} /></Col>
+        <Col span={"184"}><Input style={{width: "100%"}} value={mintY} onChange={(e) => setMintY(e.target.value)} prefix={<span>📜&nbsp;&nbsp;&nbsp;Y:</span>} /></Col>
       </Row>
       <Row justify={"center"} style={{marginTop: 24}}>
-        <Col span={8}>
-          <Button disabled={gameHadEnd} type={"primary"} size={"large"} block loading={mintLoading} onClick={handleMint}>{active ? 'Free Mint' : 'Connect Wallet'}</Button>
+        <Col span={"184"}>
+          <Button style={{width: "184px"}} disabled={gameHadEnd} type={"primary"} size={"large"} block loading={mintLoading} onClick={handleMint}>{active ? 'Free Mint' : 'Connect Wallet'}</Button>
         </Col>
       </Row>
       <div className={styles.gameMintDesc}>
@@ -284,11 +284,11 @@ const Game: FC<LayoutProps> = ({setPageMeta, connectWalletThen, handleSign}) => 
     </>
     return <>
       <Row justify={"center"} gutter={16} style={{marginTop: 24}}>
-        <Col span={8}><Button disabled={gameHadEnd} type={"primary"} size={"large"} block onClick={handleGoInvite} loading={goLinkLoading}>Go Invite</Button></Col>
-        <Col span={8}><Button disabled={gameHadEnd} type={"primary"} size={"large"} block onClick={() => open("/mint/invite", "_blank")}>0.66 ETH Invite</Button></Col>
+        <Col span={"184"}><Button style={{width: "184px"}} disabled={gameHadEnd} type={"primary"} size={"large"} block onClick={handleGoInvite} loading={goLinkLoading}>Go Invite</Button></Col>
+        <Col span={"184"}><Button style={{width: "184px"}} disabled={gameHadEnd} type={"primary"} size={"large"} block onClick={() => router.push("/mint/invite")}>0.66 ETH Invite</Button></Col>
       </Row>
     </>
-  }, [active, gameHadEnd, goLinkLoading, handleGoInvite, handleMint, invitedCode, mintLoading, mintX, mintY])
+  }, [active, gameHadEnd, goLinkLoading, handleGoInvite, handleMint, invitedCode, mintLoading, mintX, mintY, router])
 
   const parseAmount = useCallback((builder, eth) => {
     return `${numeral(builder).format('0,0')}BUILDER+${eth}ETH`
@@ -341,7 +341,7 @@ const Game: FC<LayoutProps> = ({setPageMeta, connectWalletThen, handleSign}) => 
       </Modal>
       <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} spinning={currentETHPrice.loading || builderUniswapData.loading}>
         <Row justify={"center"}>
-          <Col span={12} style={{textAlign: "center", fontFamily: "Helvetica"}}>
+          <Col span={"985"} style={{textAlign: "center", fontFamily: "Helvetica"}}>
             <p className={styles.gameTitle}>The Door Opener</p>
             <div>
               <Space>

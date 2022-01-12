@@ -18,10 +18,12 @@ export const Injected = new InjectedConnector({
     supportedChainIds: [1, 3, 4, 5, 42],
 })
 
-export const WalletConnect = new WalletConnectConnector({
+export const WalletConnectConfig = {
   rpc: { 1: RPC_URLS[1] },
   qrcode: true
-})
+}
+
+export const WalletConnect = new WalletConnectConnector(WalletConnectConfig)
 
 export const WalletLink = new WalletLinkConnector({
   url: RPC_URLS[1],
