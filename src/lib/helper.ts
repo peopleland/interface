@@ -71,7 +71,13 @@ export function getBlocksFromTimestamps() {
 }
 
 export function setWalletConnectorLocalStorage(name: any) {
+  setWalletRetryConnect()
   return localStorage.setItem("connector_name", name)
+}
+
+export function clearWalletConnectorLocalStorage() {
+  clearWalletRetryConnect()
+  return localStorage.setItem("connector_name", "")
 }
 
 export function setJWTLocalStorage(jwt: any) {
@@ -101,6 +107,18 @@ export function getJWTExpired() {
 
 export function getWalletConnectorLocalStorage() {
   return localStorage.getItem("connector_name") as ConnectorNames
+}
+
+export function getWalletRetryConnect() {
+  return localStorage.getItem("connector_retry")
+}
+
+export function setWalletRetryConnect() {
+  return localStorage.setItem("connector_retry", "1")
+}
+
+export function clearWalletRetryConnect() {
+  return localStorage.setItem("connector_retry", "")
 }
 
 export function saveUserProfile(profile: any) {

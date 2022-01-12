@@ -2,11 +2,18 @@ import styles from "../styles/Layout.module.css";
 import {EthereumNetwork} from "../lib/utils";
 import {FC, useCallback, useEffect, useMemo, useState} from "react";
 import {useWeb3React} from "@web3-react/core"
-import {ConnectorNames, ConnectorsByName, Injected} from "../hooks/useWallet";
+import {
+  ConnectorNames,
+  ConnectorsByName,
+  Injected,
+  WalletConnect,
+  WalletConnectConfig,
+  WalletLink
+} from "../hooks/useWallet";
 import Link from 'next/link'
 import Head from "next/head"
 import { useRouter } from 'next/router'
-import {Card, Dropdown, Menu, Modal} from 'antd';
+import {Card, Dropdown, Menu, message, Modal} from 'antd';
 import Image from "next/image";
 import MetamaskLogo from "../../public/assets/images/metamask.svg"
 import WalletConnectLogo from "../../public/assets/images/walletconnect.svg"
@@ -14,10 +21,18 @@ import Coinbase from "../../public/assets/images/coinbase.svg"
 import Netlify from "../../public/assets/images/netlify.svg"
 import {
   clearJWTExpiredLocalStorage,
-  clearJWTLocalStorage, clearLocalUserProfile, getJWTExpired, getJWTLocalStorage,
-  getWalletConnectorLocalStorage, saveUserProfile, setJWTExpiredLocalStorage,
+  clearJWTLocalStorage,
+  clearLocalUserProfile,
+  clearWalletConnectorLocalStorage,
+  clearWalletRetryConnect,
+  getJWTExpired,
+  getJWTLocalStorage,
+  getWalletConnectorLocalStorage,
+  getWalletRetryConnect,
+  saveUserProfile,
+  setJWTExpiredLocalStorage,
   setJWTLocalStorage,
-  setWalletConnectorLocalStorage
+  setWalletConnectorLocalStorage, setWalletRetryConnect
 } from "../lib/helper";
 import {UserGetProfile, UserLogin} from "../app/backend/user/User";
 import {LogoutOutlined, UserOutlined} from "@ant-design/icons";
@@ -58,7 +73,7 @@ const Page: FC<PageProps> = ({Component, pageProps}) => {
 
   const disConnect = useCallback(async () => {
     try {
-      setWalletConnectorLocalStorage("")
+      clearWalletConnectorLocalStorage()
       await deactivate()
     } catch (ex) {
       console.log(ex)
@@ -110,6 +125,9 @@ ${account}`
         handleClear()
         location.reload()
       })
+      provider.on("disconnect", () => {
+        clearWalletConnectorLocalStorage()
+      })
     })
   }, [connector, handleClear])
 
@@ -123,8 +141,7 @@ ${account}`
   }, [account, active, handleSign, router])
 
   const connectWallet = useCallback(async (name: ConnectorNames) => {
-    try {
-      await activate(ConnectorsByName[name])
+    activate(ConnectorsByName[name]).then(() => {
       setIsWalletModalVisible(false)
       setWalletConnectorLocalStorage(name)
 
@@ -132,9 +149,11 @@ ${account}`
         connectCallback()
         setConnectCallback(undefined)
       }
-    } catch (ex) {
+    }).catch((ex) => {
       console.log(ex)
-    }
+      setIsWalletModalVisible(false)
+      clearWalletConnectorLocalStorage()
+    })
   }, [activate, connectCallback])
 
   const connectWalletThen = useCallback((callback?: () => void) => {
@@ -143,12 +162,20 @@ ${account}`
   }, [])
 
   useEffect(() => {
+    if (!getWalletRetryConnect()) return
+    clearWalletRetryConnect()
     if (!active && getWalletConnectorLocalStorage() === ConnectorNames.MetaMask) {
       Injected.isAuthorized().then((isAuth: any) => {
         if (isAuth) {
           connectWallet(ConnectorNames.MetaMask)
         }
       }).catch(() => {})
+    }
+    if (!active && getWalletConnectorLocalStorage() === ConnectorNames.WalletConnect) {
+      // connectWallet(ConnectorNames.WalletConnect)
+    }
+    if (!active && getWalletConnectorLocalStorage() === ConnectorNames.WalletLink) {
+      connectWallet(ConnectorNames.WalletLink)
     }
   }, [active, connectWallet])
 
