@@ -25,7 +25,7 @@
     "graphql-tag": "^2.12.6",
     "keccak256": "^1.0.3",
     "merkletreejs": "^0.2.26",
-    "moment": "^2.29.1",
+    "moment": "^2.29.2",
     "next": "12.0.7",
     "numeral": "^2.0.6",
     "react": "17.0.2",
