@@ -4283,9 +4283,9 @@ dotenv@^10.0.0:
   integrity sha1-PUInuPuV+BCWzdK2ZlP7LHCFuoE=
 
 dset@^3.1.0:
-  version "3.1.1"
-  resolved "https://registry.npmmirror.com/dset/download/dset-3.1.1.tgz#07de5af7a8d03eab337ad1a8ba77fe17bba61a8c"
-  integrity sha1-B95a96jQPqszetGounf+F7umGow=
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/dset/-/dset-3.1.2.tgz#89c436ca6450398396dc6538ea00abc0c54cd45a"
+  integrity sha512-g/M9sqy3oHe477Ar4voQxWtaPIFw1jTdKZuomOjhCcBx9nHUNn0pu6NopuFFrTh/TRZIKEj+76vLWFu9BNKk+Q==
 
 duplexer3@^0.1.4:
   version "0.1.4"
